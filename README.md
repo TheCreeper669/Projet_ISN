@@ -1,8 +1,9 @@
 # Projet ISN
 
 ## Desc
-_Projet en binome pour la classe d'ISN en Terminal_
-_Jeu en vue isométrique en python avec pygame_
+Projet en binome pour la classe d'ISN en Terminal
+Jeu en vue isométrique en python avec pygame
+_Vers:_ 0.3
 
 ## Auth
  * @TheCreeper669
