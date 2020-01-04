@@ -24,6 +24,9 @@ class Game:
 		pygame.display.set_icon(pygame.image.load(self.icon))
 		self.clock = pygame.time.Clock()
 		self.font = pygame.font.Font(pygame.font.get_default_font(), 32)
+		self.background_image = pygame.Surface((self.width, self.height))
+		self.background_image.fill(BLACK)
+		self.background_rect = self.background_image.get_rect()
 
 		# time
 		self.last_tick = 1
@@ -36,20 +39,12 @@ class Game:
 		self.displays = pygame.sprite.Group()
 
 		self.player = Player(self)
-		self.framerate_display = Display(self, lambda game: "fps: " + str(int(game.clock.get_fps())), BLACK, (0, 0))
-		self.acc_display = Display(self, lambda game: "acc: " + str(game.player.acc), BLACK, (0, 32))
-		self.vel_display = Display(self, lambda game: "vel: " + str(game.player.vel), BLACK, (0, 32 * 2))
-		self.pos_display = Display(self, lambda game: "pos: " + str(game.player.pos), BLACK, (0, 32 * 3))
-		get_tiles(self, vec2(18, 10), vec2(0), vec2(77), 1, [
-			[GREEN, GREEN, GREEN],
-			[GREEN, None, GREEN],
-			[GREEN, None, GREEN, GREEN, GREEN, GREEN, GREEN],
-			[GREEN, None, None, None, None, None, GREEN],
-			[GREEN, None, GREEN, GREEN, GREEN, GREEN, GREEN],
-			[GREEN],
-			[GREEN]
-		])
-
+		self.framerate_display = Display(self, lambda game: "fps: " + str(int(game.clock.get_fps())), WHITE, (0, 0))
+		self.acc_display = Display(self, lambda game: "acc: " + str(game.player.acc), WHITE, (0, 32))
+		self.vel_display = Display(self, lambda game: "vel: " + str(game.player.vel), WHITE, (0, 32 * 2))
+		self.pos_display = Display(self, lambda game: "pos: " + str(game.player.pos), WHITE, (0, 32 * 3))
+		self.background = Background(self, vec2(16, 9), vec2(self.rect.center), vec2(77), 1, map1)
+		
 		# run main loop
 		self.time = time.perf_counter()
 		self.clock.tick(self.framerate)
@@ -70,6 +65,13 @@ class Game:
 		self.clock.tick(self.framerate)
 		self.actual_fps = self.clock.get_fps()
 		self.events()
+
+		self.background.pos += vec2(0)
+		self.background.rect.center = self.background.pos
+		if not self.rect.colliderect(self.background.rect):
+			self.background.pos = vec2(self.rect.center)
+			self.background.rect.center = self.background.pos
+
 		self.update()
 		self.draw()
 
@@ -83,8 +85,21 @@ class Game:
 		self.sprites.update()
 
 	def draw(self):
-		self.window.fill(BLACK)
+		self.window.blit(self.background_image, self.background_rect)
 		self.tiles.draw(self.window)
 		self.player.draw(self.window)
 		self.displays.draw(self.window)
 		pygame.display.flip()
+
+map1 = [
+	[GREEN, GREEN, GREEN],
+	[GREEN, None, GREEN],
+	[GREEN, None, GREEN, GREEN, GREEN, GREEN, GREEN],
+	[GREEN, None, None, None, None, None, GREEN],
+	[GREEN, None, GREEN, GREEN, GREEN, GREEN, GREEN],
+	[GREEN],
+	[GREEN]
+]
+
+map2 = [[GREEN] * 2 + [None] + [GREEN] * 15] * 10
+map2[5] = None

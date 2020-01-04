@@ -41,13 +41,50 @@ class Tile(pygame.sprite.Sprite):
 	def update(self):
 		pass
 
+"""
 def get_tiles(game, dim, pos, tile_dim, space, map):
 	for y in range(int(dim[1])):
 		for x in range(int(dim[0])):
-			if len(map) > y and len(map[y]) > x and type(map[y][x]) == type((0, 0, 0)):
+			if type(map) == list and len(map) > y and type(map[y]) == list and len(map[y]) > x and type(map[y][x]) != type(None):
 				game.tiles.add(Tile(game, tile_dim, pos + vec2(tile_dim.x * x + space * x, tile_dim.y * y + space * y), map[y][x]))
 			else:
 				game.tiles.add(Tile(game, tile_dim, pos + vec2(tile_dim.x * x + space * x, tile_dim.y * y + space * y), BLUE))
+"""
+
+class Background(pygame.sprite.Sprite):
+	def __init__(self, game, dim, pos, tiledim, space, bgmap):
+		pygame.sprite.Sprite.__init__(self)
+		self.game = game
+		self.game.sprites.add(self)
+		self.dim = dim
+		self.last_pos = None
+		self.tiledim = tiledim
+		self.space = space
+		self.pos = pos
+		self.map = bgmap
+		self.rect = pygame.Rect(vec2(0), vec2(self.dim.x * self.tiledim.x, self.dim.y * self.tiledim.y) + self.dim * self.space)
+		self.rect.center = self.pos
+		self.inframe = 0
+
+	def update(self):
+		if self.pos != self.last_pos:
+			self.last_tile = None
+			self.inframe = 0
+			for tile in self.game.tiles:
+				tile.kill()
+			for y in range(int(self.dim[1])):
+				for x in range(int(self.dim[0])):
+					if type(self.map) == list and len(self.map) > y and type(self.map[y]) == list and len(self.map[y]) > x and type(self.map[y][x]) != type(None):
+						self.last_tile = Tile(self.game, self.tiledim, vec2(self.rect.topleft) + vec2(self.tiledim.x * x + self.space * x, self.tiledim.y * y + self.space * y), self.map[y][x])
+					else:
+						self.last_tile = Tile(self.game, self.tiledim, vec2(self.rect.topleft) + vec2(self.tiledim.x * x + self.space * x, self.tiledim.y * y + self.space * y), BLUE)
+					if self.game.rect.colliderect(self.last_tile.rect):
+						self.inframe += 1
+					else:
+						self.last_tile.kill()
+						del self.last_tile
+			self.last_pos = vec2(self.pos)
+
 
 class Player(pygame.sprite.Sprite):
 	def __init__(self, game):
@@ -55,7 +92,7 @@ class Player(pygame.sprite.Sprite):
 		# Set game ref
 		self.game = game
 		# Add to groups
-		game.sprites.add(self)
+		self.game.sprites.add(self)
 		# Load json
 		self.name = self.game.settings["player_name"]
 		content = load_json(DIR_PLAYERS + self.name + "/info.json")
@@ -101,37 +138,16 @@ class Player(pygame.sprite.Sprite):
 			self.shooting = True
 
 		# Motion
-		self.acc = self.motion_orientation * self.def_acc * self.game.last_tick
+		self.acc = self.motion_orientation
+		if self.acc.length() != 0:
+			self.acc.scale_to_length(self.def_acc * self.game.last_tick)
 		self.acc += self.vel * self.friction
 		self.vel += self.acc
-		if abs(self.vel.x) < 0.1:
+		if abs(self.vel.x) < self.def_acc * self.game.last_tick / 10:
 			self.vel.x = 0
-		if abs(self.vel.y) < 0.1:
+		if abs(self.vel.y) < self.def_acc * self.game.last_tick / 10:
 			self.vel.y = 0
 		self.pos += self.vel + self.acc / 2
-
-		# Borders
-		border_width = 5
-		border = border_width + self.rect.height / 2
-		if self.pos.y <= border:
-			self.pos.y = border
-			if self.vel.y < 0:
-				self.vel.y = 0
-		border = self.game.rect.height - border_width - self.rect.height / 2
-		if self.pos.y >= border:
-			self.pos.y = border
-			if self.vel.y > 0:
-				self.vel.y = 0
-		border = border_width + self.rect.width / 2
-		if self.pos.x <= border:
-			self.pos.x = border
-			if self.vel.x < 0:
-				self.vel.x = 0
-		border = self.game.rect.width - border_width - self.rect.width / 2
-		if self.pos.x >= border:
-			self.pos.x = border
-			if self.vel.x > 0:
-				self.vel.x = 0
 
 		self.rect.center = self.pos
 
@@ -159,6 +175,31 @@ class Player(pygame.sprite.Sprite):
 						self.vel.y = 0
 
 		self.pos = vec2(self.rect.center)
+
+		# Borders
+		border_width = 0
+		border = border_width + self.rect.height / 2
+		if self.pos.y <= border:
+			self.pos.y = border
+			if self.vel.y < 0:
+				self.vel.y = 0
+		border = self.game.rect.height - border_width - self.rect.height / 2
+		if self.pos.y >= border:
+			self.pos.y = border
+			if self.vel.y > 0:
+				self.vel.y = 0
+		border = border_width + self.rect.width / 2
+		if self.pos.x <= border:
+			self.pos.x = border
+			if self.vel.x < 0:
+				self.vel.x = 0
+		border = self.game.rect.width - border_width - self.rect.width / 2
+		if self.pos.x >= border:
+			self.pos.x = border
+			if self.vel.x > 0:
+				self.vel.x = 0
+
+		self.rect.center = self.pos
 
 		"""
 		# Weapon
