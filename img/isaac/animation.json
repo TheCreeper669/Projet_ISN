@@ -1,0 +1,18 @@
+{
+	"up": {
+		"length": 3,
+		"halt": 1
+	},
+	"down": {
+		"length": 3,
+		"halt": 1
+	},
+	"right": {
+		"length": 3,
+		"halt": 1
+	},
+	"left": {
+		"length": 3,
+		"halt": 1
+	}
+}

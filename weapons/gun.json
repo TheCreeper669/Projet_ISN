@@ -1,0 +1,11 @@
+{
+	"name": "gun",
+	"vel": 20,
+	"friction": -0.01,
+	"loading": 16,
+	"image": {
+		"color": [0, 0, 255],
+		"type": "rect",
+		"dim": [8, 8]
+	}
+}

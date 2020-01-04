@@ -1,0 +1,13 @@
+{
+    "player": {
+        "acc": 0.5,
+        "friction": -0.12
+    },
+    "window": {
+        "framerate": 60,
+        "height": 720,
+        "icon": "./img/icon.png",
+        "title": "An interesting title.",
+        "width": 1280
+    }
+}
