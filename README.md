@@ -1,13 +1,13 @@
 # Projet ISN
 
 ## Desc
-Projet en binome pour la classe d'ISN en Terminal
-Jeu en vue isométrique en python avec pygame
+Projet en binome pour la classe d'ISN en Terminal\n
+Jeu en vue isométrique en python avec pygame\n
 _Vers:_ 0.3
 
 ## Auth
- * @TheCreeper669
- * @cececoul
+ * [TheCreeper669](https://github.com/TheCreeper669)
+ * [cececoul](https://github.com/cececoul)
 
 ## Play
  * Installer python [python 3](https://www.python.org/downloads/) (l'exe python est sous l'alias py pour la lisibilité)
