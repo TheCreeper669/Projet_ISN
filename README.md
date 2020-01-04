@@ -3,7 +3,7 @@
 ## Desc
  Projet en binome pour la classe d'ISN en Terminal\
  Jeu en vue isométrique en python avec pygame\
- _Vers:_ 0.3
+ __Vers:__ 0.3
 
 ## Auth
  * [TheCreeper669](https://github.com/TheCreeper669)
