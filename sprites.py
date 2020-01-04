@@ -2,110 +2,113 @@ import pygame
 import json
 import sys
 import os
+from math import sqrt
 
 from vars import *
+from func import *
 
-vec2 = pygame.math.Vector2
+class Display(pygame.sprite.Sprite):
+	def __init__(self, game, func, color, pos):
+		pygame.sprite.Sprite.__init__(self)
+		self.game = game
+		self.game.sprites.add(self)
+		self.game.displays.add(self)
+		self.func = func
+		self.color = color
+		self.pos = pos
+		self.image = self.game.font.render(self.func(self.game), True, self.color)
+		self.rect = self.image.get_rect()
+		self.rect.topleft = self.pos
 
-def vec2_lq(vec, limit=1):
-	return abs(vec.x) <= limit and abs(vec.y) <= limit
+	def update(self):
+		self.image = self.game.font.render(self.func(self.game), True, self.color)
+		self.rect = self.image.get_rect()
+		self.rect.topleft = self.pos
 
-class Animation:
-	def __init__(self, dirname, prefix="", halt=False, delay=0, reverse=False):
-		self.dirname = dirname
-		self.prefix = prefix
-		with open(self.dirname + "animation.json", mode= "r", encoding= "utf-8") as file:
-			content = json.loads(file.read())[prefix]
-			self.halt_frame = content["halt"]
-			self.length = content["length"]
-		self.current = 0
-		self.delay = delay
-		self.reverse = reverse
-		self.way = True
-		self.halt = halt
+class Tile(pygame.sprite.Sprite):
+	def __init__(self, game, dim, pos, color):
+		pygame.sprite.Sprite.__init__(self)
+		self.game = game
+		self.game.sprites.add(self)
+		self.game.tiles.add(self)
+		if color == GREEN:
+			self.game.obstacles.add(self)
+		self.image = pygame.Surface(dim)
+		self.image.fill(color)
+		self.rect = self.image.get_rect()
+		self.rect.topleft = pos
 
-	def change(self, prefix, halt=False):
-		self.prefix = prefix
-		self.current = 0
-		self.halt = halt
-		with open(self.dirname + "animation.json", mode= "r", encoding= "utf-8") as file:
-			content = json.loads(file.read())[prefix]
-			self.halt_frame = content["halt"]
-			self.length = content["length"]
+	def update(self):
+		pass
 
-
-	def get_image(self):
-		if self.halt:
-			return pygame.image.load(self.dirname + self.prefix + str(self.halt_frame) + ".bmp")
-		if self.way:
-			if self.current == self.length * self.delay - 1:
-				if self.reverse:
-					self.way = False
-					self.current -= 1
-				else:
-					self.current = -1
-			self.current += 1
-		else:
-			if self.current == 0:
-				self.way = True
-				self.current += 1
-			self.current -= 1
-		return pygame.image.load(self.dirname + self.prefix + str(self.current // self.delay) + ".bmp")
-
+def get_tiles(game, dim, pos, tile_dim, space, map):
+	for y in range(int(dim[1])):
+		for x in range(int(dim[0])):
+			if len(map) > y and len(map[y]) > x and type(map[y][x]) == type((0, 0, 0)):
+				game.tiles.add(Tile(game, tile_dim, pos + vec2(tile_dim.x * x + space * x, tile_dim.y * y + space * y), map[y][x]))
+			else:
+				game.tiles.add(Tile(game, tile_dim, pos + vec2(tile_dim.x * x + space * x, tile_dim.y * y + space * y), BLUE))
 
 class Player(pygame.sprite.Sprite):
 	def __init__(self, game):
-		# Init mother class
 		pygame.sprite.Sprite.__init__(self)
 		# Set game ref
 		self.game = game
 		# Add to groups
 		game.sprites.add(self)
-		# Load settings
-		self.def_acc = self.game.settings["player"]["acc"]
-		self.friction = self.game.settings["player"]["friction"]
+		# Load json
+		self.name = self.game.settings["player_name"]
+		content = load_json(DIR_PLAYERS + self.name + "/info.json")
+		self.def_acc = content["acc"]
+		self.friction = content["friction"]
+		self.weapon = Weapon(content["weapon"])
 		# Motion
 		self.pos = vec2(self.game.width / 2, self.game.height / 2)
 		self.vel = vec2(0)
 		self.acc = vec2(0)
+		# Orientation
 		self.motion_orientation = vec2(0)
-		# Weapon
-		if len(sys.argv) > 1:
-			self.weapon = Weapon("./weapons/" + sys.argv[1] + ".json")
-		else:
-			self.weapon = Weapon("./weapons/gun.json")
 		self.weapon_orientation = vec2(0)
-		self.weapon_cycle = 0
+		# Bool
+		self.moving = False
+		self.moving_x = False
+		self.moving_y = False
+		self.shooting = False
+		self.firing = False
 		# Image
-		self.halt = True
-		self.last_halt = self.halt
-		self.direction = "down"
-		self.last_direction = self.direction
-		self.animation = Animation("./img/isaac/", prefix= self.direction, halt= self.halt, delay= self.game.framerate // 2, reverse= True)
-		self.update_image()
+		self.image = pygame.Surface((64, 64))
+		self.image.fill(RED)
+		self.rect = self.image.get_rect()
 
 	def update(self):
-		# Motion Orientation
-		self.motion_orientation = vec2(0, 0)
-		if self.game.keys[K_MOTION_LEFT] and not self.game.keys[K_MOTION_RIGHT]:
-			self.motion_orientation.x = -1
-		if self.game.keys[K_MOTION_RIGHT] and not self.game.keys[K_MOTION_LEFT]:
-			self.motion_orientation.x = 1
-		if self.game.keys[K_MOTION_UP] and not self.game.keys[K_MOTION_DOWN]:
-			self.motion_orientation.y = -1
-		if self.game.keys[K_MOTION_DOWN] and not self.game.keys[K_MOTION_UP]:
-			self.motion_orientation.y = 1
+		# Orientation
+		self.motion_orientation = get_orientation(self.game.keys, *K_MOTION)
+		self.weapon_orientation = get_orientation(self.game.keys, *K_WEAPON)
 
-		if self.motion_orientation == vec2(0, 0):
-			self.halt = True
-		else:
-			self.halt = False
+		# Bool
+		self.moving_x = False
+		if self.motion_orientation.x != 0:
+			self.moving_x = True
+
+		self.moving_y = False
+		if self.motion_orientation.y != 0:
+			self.moving_y = True
+
+		self.moving = self.moving_x or self.moving_y
+		
+		self.shooting = False
+		if self.weapon_orientation != vec2(0):
+			self.shooting = True
 
 		# Motion
-		self.acc = self.motion_orientation * self.def_acc 	# acc
-		self.acc += self.vel * self.friction 				# friction
-		self.vel += self.acc 								# vel
-		self.pos += self.vel + self.acc / 2 				# pos
+		self.acc = self.motion_orientation * self.def_acc * self.game.last_tick
+		self.acc += self.vel * self.friction
+		self.vel += self.acc
+		if abs(self.vel.x) < 0.1:
+			self.vel.x = 0
+		if abs(self.vel.y) < 0.1:
+			self.vel.y = 0
+		self.pos += self.vel + self.acc / 2
 
 		# Borders
 		border_width = 5
@@ -114,7 +117,7 @@ class Player(pygame.sprite.Sprite):
 			self.pos.y = border
 			if self.vel.y < 0:
 				self.vel.y = 0
-		border = self.game.height - border_width - self.rect.height / 2
+		border = self.game.rect.height - border_width - self.rect.height / 2
 		if self.pos.y >= border:
 			self.pos.y = border
 			if self.vel.y > 0:
@@ -124,69 +127,63 @@ class Player(pygame.sprite.Sprite):
 			self.pos.x = border
 			if self.vel.x < 0:
 				self.vel.x = 0
-		border = self.game.width - border_width - self.rect.width / 2
+		border = self.game.rect.width - border_width - self.rect.width / 2
 		if self.pos.x >= border:
 			self.pos.x = border
 			if self.vel.x > 0:
 				self.vel.x = 0
 
+		self.rect.center = self.pos
+
+		obstacles_list = pygame.sprite.spritecollide(self, self.game.obstacles, False)
+		for obstacle in obstacles_list:
+			diff = vec2(obstacle.rect.center) - vec2(self.rect.center)
+			if abs(diff.x) >= abs(diff.y):
+				self.rect.x += diff.x
+				if diff.x >= 0:
+					self.rect.right = obstacle.rect.left
+					if self.vel.x > 0:
+						self.vel.x = 0
+				else:
+					self.rect.left = obstacle.rect.right
+					if self.vel.x < 0:
+						self.vel.x = 0
+			else:
+				if diff.y >= 0:
+					self.rect.bottom = obstacle.rect.top
+					if self.vel.y > 0:
+						self.vel.y = 0
+				else:
+					self.rect.top = obstacle.rect.bottom
+					if self.vel.y < 0:
+						self.vel.y = 0
+
+		self.pos = vec2(self.rect.center)
+
+		"""
+		# Weapon
 		if self.weapon_cycle > 0:
 			self.weapon_cycle += 1
 		if self.weapon_cycle >= self.weapon.loading:
 			self.weapon_cycle = 0
-		if self.weapon_cycle == 0:
-			# Weapon Orientation
-			self.weapon_orientation = vec2(0)
-			if self.game.keys[K_WEAPON_LEFT] and not self.game.keys[K_WEAPON_RIGHT]:
-				self.weapon_orientation.x = -1
-			if self.game.keys[K_WEAPON_RIGHT] and not self.game.keys[K_WEAPON_LEFT]:
-				self.weapon_orientation.x = 1
-			if self.game.keys[K_WEAPON_UP] and not self.game.keys[K_WEAPON_DOWN]:
-				self.weapon_orientation.y = -1
-			if self.game.keys[K_WEAPON_DOWN] and not self.game.keys[K_WEAPON_UP]:
-				self.weapon_orientation.y = 1
+		if self.weapon_cycle == 0 and self.weapon_orientation != vec2(0):
+			self.weapon_cycle = 1
+			Bullet(self.game, self.weapon, vec2(self.pos), self.weapon_orientation)
 
-			# Shoot
-			if self.weapon_orientation != vec2(0):
-				self.weapon_cycle = 1
-				Bullet(self.game, self.weapon, vec2(self.pos), self.weapon_orientation)
-
-	def update_image(self):
-		if self.motion_orientation.x != 0:
-			if self.motion_orientation.x == 1:
-				self.direction = "right"
-			else:
-				self.direction = "left"
-		elif self.motion_orientation.y != 0:
-			if self.motion_orientation.y == -1:
-				self.direction = "up"
-			else:
-				self.direction = "down"
+		# Image
+		if self.weapon_orientation == vec2(0):
+			self.direction = get_direction(self.motion_orientation)
+		else:
+			self.direction = get_direction(self.weapon_orientation)
 
 		if self.direction != self.last_direction or self.halt != self.last_halt:
 			self.animation.change(self.direction, self.halt)
 
-		self.last_halt = self.halt
 		self.last_direction = self.direction
+		"""
 
-		self.image = self.animation.get_image()
-		self.rect = self.image.get_rect()
-		self.rect.center = self.pos
-
-	def draw(self):
-		self.game.screen.blit(self.image, self.rect)
-
-class Weapon:
-	def __init__(self, filename):
-		# read file
-		content = {}
-		with open(filename, mode= "r", encoding= "utf-8") as file:
-			content = json.loads(file.read())
-		self.vel = content["vel"]
-		self.friction = content["friction"]
-		self.loading = content["loading"]
-		self.name = content["name"]
-		self.image = content["image"]
+	def draw(self, surface):
+		surface.blit(self.image, self.rect)
 
 
 class Bullet(pygame.sprite.Sprite):
@@ -208,7 +205,7 @@ class Bullet(pygame.sprite.Sprite):
 		# Image
 		self.update_image()
 
-	def update(self):
+	def draw(self):
 		# Motion
 		self.acc = vec2(0)
 		self.acc += self.vel * self.friction 	# friction
@@ -234,9 +231,10 @@ class Bullet(pygame.sprite.Sprite):
 		if vec2_lq(self.vel):
 			self.kill()
 
-	def update_image(self):
+		# Image
 		if self.weapon.image["type"] == "rect":
 			self.image = pygame.Surface(self.weapon.image["dim"])
 			self.image.fill(self.weapon.image["color"])
 		self.rect = self.image.get_rect()
 		self.rect.center = self.pos
+		self.game.window.blit(self.image, self.rect)
