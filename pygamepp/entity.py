@@ -33,7 +33,7 @@ class Entity(pg.sprite.Sprite):
 	def update(self):
 		self.forces = vec(0)
 		# collisions
-		
+		# controls
 		self.acc = self.forces / self.mass
 		self.acc += self.vel * self.friction # to verify
 		self.vel += self.acc
