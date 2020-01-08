@@ -1,9 +1,0 @@
-{
-	"size": [7, 3],
-	"enemies": [],
-	"map": [
-		[],
-		[null, null, "rock"],
-		[]
-	]
-}
