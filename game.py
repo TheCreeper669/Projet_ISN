@@ -30,7 +30,7 @@ class Game:
 		self.groups = [
 			"all", "sprites", "entities", "submaps",
 			"displays", "fix_displays", "hitboxs", "fakewalls",
-			"players", "stationaries", "walls",
+			"players", "mobs", "stationaries", "walls",
 			"find_submap_sprites", "find_submap_entities"
 		]
 

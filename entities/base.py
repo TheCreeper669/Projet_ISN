@@ -87,10 +87,9 @@ class Anim(Image):
 				self.counter *= self.step - 1
 			else:
 				self.counter -= 1
-			self.reset_surface(pgp.pg.transform.scale(pgp.pg.image.load(self.folder + self.current_anim[0] + self.anims[self.current_anim][self.counter // self.step][0] + ".png"), self.size))
+			self.reset_surface(pgp.pg.transform.scale(pgp.pg.image.load(self.folder + self.current_anim + "/" + self.anims[self.current_anim][self.counter // self.step] + ".png"), self.size))
 		else:
-			self.reset_surface(pgp.pg.transform.scale(pgp.pg.image.load(self.folder + self.current_anim[0] + self.default_frame[self.current_anim][0] + ".png"), self.size))
-		
+			self.reset_surface(pgp.pg.transform.scale(pgp.pg.image.load(self.folder + self.current_anim + "/" + self.default_frame[self.current_anim] + ".png"), self.size))
 
 
 

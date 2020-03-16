@@ -9,6 +9,7 @@
 	},
 	"entities": {
 		"p": [ "player", "Player" ],
-		"W": [ "terrain", "Wall" ]
+		"W": [ "terrain", "Wall" ],
+		"s": [ "mob", "Spider" ]
 	}
 }
