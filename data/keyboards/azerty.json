@@ -1,0 +1,9 @@
+{
+	"z": "w",
+	"w": "z",
+	"a": "q",
+	"q": "a",
+	"m": "COMMA",
+	"SEMICOLON": "m",
+	"COMMA": "SEMICOLON"
+}

@@ -1,0 +1,14 @@
+{
+	"default_tile": "-",
+	"none_tiles": [ " " ],
+	"tiles": {
+		"-": "grass"
+	},
+	"sprites": {
+		"w": [ "terrain", "FakeWall" ]
+	},
+	"entities": {
+		"p": [ "player", "Player" ],
+		"W": [ "terrain", "Wall" ]
+	}
+}

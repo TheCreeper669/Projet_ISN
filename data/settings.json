@@ -1,0 +1,13 @@
+{
+	"res": [
+		[1280, 720],
+		[1920, 1080]
+	],
+	"fullscreen": false,
+	"framerate": 60,
+	"title": "[Projet ISN]",
+	"icon": "256.png",
+	"keyboard": "default",
+	"draw_submap_info": true,
+	"draw_hitbox": true
+}
