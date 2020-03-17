@@ -4,7 +4,7 @@
 	"anims": {
 		"idle": [ "center" ],
 		"moving": [ "up", "left", "up", "right" ],
-		"attack": [ "up", "center", "down", "center" ],
+		"attack": [ "up", "center", "down", "center" ]
 	},
 	"no_change_value": [ null ],
 	"values": {

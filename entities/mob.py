@@ -18,6 +18,6 @@ class Spider(entities.Entity):
 		self.motion_orientation = vec(0)
 		self.forces += self.motion_orientation * self.force_coef
 		entities.Entity.update(self)
-		self.image.update(value= [self.motion_orientation != vec(0), self.attack])
+		self.image.update(True, [self.motion_orientation != vec(0), self.attack])
 
 
