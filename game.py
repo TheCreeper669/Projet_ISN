@@ -12,13 +12,13 @@ class Game:
 		if self.fullscreen:
 			self.window = pgp.pg.display.set_mode((self.display_info.current_w, self.display_info.current_h), pgp.pg.FULLSCREEN | pgp.pg.HWSURFACE | pgp.pg.DOUBLEBUF)
 		else:
-			self.window = pgp.pg.display.set_mode(self.res[0])
+			self.window = pgp.pg.display.set_mode(self.res, pgp.pg.RESIZABLE | pgp.pg.HWSURFACE | pgp.pg.DOUBLEBUF)
 		self.rect = self.window.get_rect()
 		pgp.pg.display.set_caption(self.title)
 		pgp.pg.display.set_icon(pgp.pg.image.load(DIR_IMAGE_ICONS + self.icon))
 		self.clock = pgp.time.Clock()
 		self.font = pgp.pg.font.Font(pgp.pg.font.get_default_font(), 32)
-		self.background_image = pgp.pg.Surface(self.res[0])
+		self.background_image = pgp.pg.Surface(self.res)
 		self.background_image.fill(BLACK)
 		self.background_rect = self.background_image.get_rect()
 
@@ -93,6 +93,7 @@ class Game:
 	def load_settings(self):
 		settings = json.load(FILE_SETTINGS)
 		self.res = settings["res"]
+		self.on_screen = self.res.copy()
 		self.fullscreen = settings["fullscreen"]
 		self.title = settings["title"]
 		self.icon = settings["icon"]
@@ -104,6 +105,9 @@ class Game:
 			self.keyboard = pgp.key.load(DIR_KEYBOARDS + keyboard + ".json")
 		self.draw_submap_info = settings["draw_submap_info"]
 		self.draw_hitbox = settings["draw_hitbox"]
+		self.tile_size = settings["tile_size"]
+		self.submap_size = settings["submap_size"]
+		self.off_screen_alive = settings["off_screen_alive"]
 
 	def loop(self):
 		self.dt = self.clock.tick(self.framerate)
@@ -111,21 +115,39 @@ class Game:
 		self.update()
 		self.draw()
 
+	def set_res(self, new_res):
+		self.res = new_res
+		self.window = pgp.pg.display.set_mode(self.res, pgp.pg.RESIZABLE | pgp.pg.HWSURFACE | pgp.pg.DOUBLEBUF)
+		self.background_image = pgp.pg.Surface(self.res)
+		self.background_image.fill(BLACK)
+		self.background_rect = self.background_image.get_rect()
+		self.on_screen = self.res.copy()
+		self.window = pgp.pg.display.set_mode(self.res)
+		self.rect = self.window.get_rect()
+
 	def events(self):
 		self.keys = pg.key.get_pressed()
 		for event in pg.event.get():
 			if event.type == pgp.pg.KEYDOWN:
-				if event.key == pgp.pg.K_F11:
+				"""if event.key == pgp.pg.K_F11:
 					self.fullscreen = not self.fullscreen
 					if self.fullscreen:
 						self.window = pgp.pg.display.set_mode((self.display_info.current_w, self.display_info.current_h), pgp.pg.FULLSCREEN | pgp.pg.HWSURFACE | pgp.pg.DOUBLEBUF)
 					else:
-						self.window = pgp.pg.display.set_mode(self.res[0])
+						self.window = pgp.pg.display.set_mode(self.res, pgp.pg.RESIZABLE | pgp.pg.HWSURFACE | pgp.pg.DOUBLEBUF)
 					self.rect = self.window.get_rect()
-				elif event.key == pgp.pg.K_F10 and not self.fullscreen:
-					self.res = [ self.res.pop() ] + self.res
-					self.window = pgp.pg.display.set_mode(self.res[0])
-					self.rect = self.window.get_rect()
+				el"""
+				if event.key == pgp.pg.K_h:
+					self.draw_hitbox = not self.draw_hitbox
+				elif event.key == pgp.pg.K_j:
+					self.draw_submap_info = not self.draw_submap_info
+				elif event.key == pgp.pg.K_k:
+					self.on_screen = list(vec(self.on_screen) * (1 / 2 if self.on_screen == self.res else 2))
+					self.map.reset_followers()
+					self.map.reset_submaps_groups()
+
+			elif event.type == pgp.pg.VIDEORESIZE:
+				self.set_res(list(event.size))
 					
 			elif event.type == pgp.pg.QUIT:
 				self.stop = True

@@ -22,7 +22,7 @@ class VirtualTile:
 		self.game = self.map.game
 		self.name = name
 		self.image = entities.Image(pgp.pg.image.load(DIR_IMAGE_TILES + [ file for file in os.listdir(DIR_IMAGE_TILES) if file.startswith(self.name + ".") ][0]))
-		self.image.set_size((TILE_SIZE, TILE_SIZE))
+		self.image.set_size((self.map.game.tile_size, self.map.game.tile_size))
 	def summon(self, submap, x, y):
 		return Tile(self.game, submap, self.image.copy(), x, y)
 
@@ -58,39 +58,39 @@ class Submap(entities.Sprite):
 	def __init__(self, m_map, x, y):
 		entities.Sprite.__init__(self, m_map.game)
 		self.game.groups["submaps"].add(self)
-		self.submap_pos = vec(x // SUBMAP_SIZE, y // SUBMAP_SIZE)
-		self.pos = self.submap_pos * SUBMAP_SIZE * TILE_SIZE
+		self.submap_pos = vec(x // self.game.submap_size, y // self.game.submap_size)
+		self.pos = self.submap_pos * self.game.submap_size * self.game.tile_size
 		self.map = m_map
-		self.tiles = [ [ None for _ in range(SUBMAP_SIZE) ] for _ in range(SUBMAP_SIZE) ]
+		self.tiles = [ [ None for _ in range(self.game.submap_size) ] for _ in range(self.game.submap_size) ]
 		self.content = pgp.pg.sprite.Group()
 		self.sprites = pgp.pg.sprite.Group()
 		self.entities = pgp.pg.sprite.Group()
 		self.collidable = self.entities.copy()
-		for i in range(SUBMAP_SIZE):
+		for i in range(self.game.submap_size):
 			if x + i >= len(self.map.lines): break
-			for j in range(SUBMAP_SIZE):
+			for j in range(self.game.submap_size):
 				if y + j >= len(self.map.lines[x + i]): break
 				if self.map.lines[x + i][y + j] in self.map.virtual_sprites:
-					self.tiles[i][j] = self.map.virtual_tiles[self.map.biome_default_tile].summon(self, (x + i) * TILE_SIZE, (y + j) * TILE_SIZE)
-					self.add_sprite(self.map.virtual_sprites[self.map.lines[x + i][y + j]].summon(self, (x + i + .5) * TILE_SIZE, (y + j + .5) * TILE_SIZE))
+					self.tiles[i][j] = self.map.virtual_tiles[self.map.biome_default_tile].summon(self, (x + i) * self.game.tile_size, (y + j) * self.game.tile_size)
+					self.add_sprite(self.map.virtual_sprites[self.map.lines[x + i][y + j]].summon(self, (x + i + .5) * self.game.tile_size, (y + j + .5) * self.game.tile_size))
 				elif self.map.lines[x + i][y + j] in self.map.virtual_entities:
-					self.tiles[i][j] = self.map.virtual_tiles[self.map.biome_default_tile].summon(self, (x + i) * TILE_SIZE, (y + j) * TILE_SIZE)
-					self.add_entity(self.map.virtual_entities[self.map.lines[x + i][y + j]].summon(self, (x + i + .5) * TILE_SIZE, (y + j + .5) * TILE_SIZE))
+					self.tiles[i][j] = self.map.virtual_tiles[self.map.biome_default_tile].summon(self, (x + i) * self.game.tile_size, (y + j) * self.game.tile_size)
+					self.add_entity(self.map.virtual_entities[self.map.lines[x + i][y + j]].summon(self, (x + i + .5) * self.game.tile_size, (y + j + .5) * self.game.tile_size))
 				elif self.map.lines[x + i][y + j] in self.map.biome_none_tiles:
 					self.tiles[i][j] = None
 				else:
-					self.tiles[i][j] = self.map.virtual_tiles[self.map.lines[x + i][y + j]].summon(self, (x + i + .5) * TILE_SIZE, (y + j + .5) * TILE_SIZE)
+					self.tiles[i][j] = self.map.virtual_tiles[self.map.lines[x + i][y + j]].summon(self, (x + i + .5) * self.game.tile_size, (y + j + .5) * self.game.tile_size)
 		self.create_image()
 		self.image.topleft = self.pos
 		self.hitbox = entities.Hitbox(self, color= CYAN)
 		self.display = entities.display.Display(self.game, self.submap_pos, CYAN, self.pos + vec(4))
 
 	def create_image(self):
-		surface = pgp.pg.Surface((SUBMAP_SIZE * TILE_SIZE, SUBMAP_SIZE * TILE_SIZE))
-		for x in range(SUBMAP_SIZE):
-			for y in range(SUBMAP_SIZE):
+		surface = pgp.pg.Surface((self.game.submap_size * self.game.tile_size, self.game.submap_size * self.game.tile_size))
+		for x in range(self.game.submap_size):
+			for y in range(self.game.submap_size):
 				if self.tiles[x][y] is not None:
-					surface.blit(self.tiles[x][y].image.surface, (x * TILE_SIZE, y * TILE_SIZE))
+					surface.blit(self.tiles[x][y].image.surface, (x * self.game.tile_size, y * self.game.tile_size))
 		self.image = entities.Image(surface)
 
 	def link(self):
@@ -216,9 +216,9 @@ class Map:
 			self.lines = tilemap.read().split("\n")
 		self.create_submaps()
 		self.entity = self.game.player
-		self.rpos = self.entity.pos - vec(self.game.res[0]) / 2
-		self.on_screen_follower = Follower(self.game, self.entity, self.game.res[0])
-		self.alive_follower = Follower(self.game, self.entity, (self.game.res[0][0] + TILE_SIZE * SUBMAP_SIZE * OFF_SCREEN_ALIVE_SUBMAPS_RADIUS * 2, self.game.res[0][1] + TILE_SIZE * SUBMAP_SIZE * OFF_SCREEN_ALIVE_SUBMAPS_RADIUS * 2))
+		self.rpos = self.entity.pos - vec(self.game.res) / 2
+		self.on_screen_follower = Follower(self.game, self.entity, self.game.on_screen)
+		self.alive_follower = Follower(self.game, self.entity, (self.game.on_screen[0] + self.game.tile_size * self.game.submap_size * self.game.off_screen_alive * 2, self.game.on_screen[1] + self.game.tile_size * self.game.submap_size * self.game.off_screen_alive * 2))
 		self.on_screen = pgp.pg.sprite.Group()
 		self.alive = pgp.pg.sprite.Group()
 		self.dead = self.game.groups["submaps"].copy()
@@ -236,8 +236,8 @@ class Map:
 		self.virtual_entities = { entity: VirtualEntity(self, self.biome_entities[entity]) for entity in self.biome_entities }
 
 	def reset_followers(self):
-		self.on_screen_follower.image.size = self.game.res[0]
-		self.alive_follower.image.size = self.game.res[0][0] + TILE_SIZE * SUBMAP_SIZE * OFF_SCREEN_ALIVE_SUBMAPS_RADIUS * 2, self.game.res[0][1] + TILE_SIZE * SUBMAP_SIZE * OFF_SCREEN_ALIVE_SUBMAPS_RADIUS * 2
+		self.on_screen_follower.image.size = self.game.on_screen
+		self.alive_follower.image.size = self.game.on_screen[0] + self.game.tile_size * self.game.submap_size * self.game.off_screen_alive * 2, self.game.on_screen[1] + self.game.tile_size * self.game.submap_size * self.game.off_screen_alive * 2
 
 	def reset_submaps_groups(self):
 		self.dead.add(self.on_screen)
@@ -263,9 +263,9 @@ class Map:
 
 	def verify_submap(self, x, y):
 		only_none_tiles = True
-		for i in range(SUBMAP_SIZE):
+		for i in range(self.game.submap_size):
 			if x + i >= len(self.lines): break
-			for j in range(SUBMAP_SIZE):
+			for j in range(self.game.submap_size):
 				if y + j >= len(self.lines[x + i]): break
 				if self.lines[x + i][y + j] not in self.virtual_tiles and self.lines[x + i][y + j] not in self.biome_none_tiles and self.lines[x + i][y + j] not in self.virtual_entities and self.lines[x + i][y + j] not in self.virtual_sprites:
 					raise ValueError("unknown char at line {} at pos {} in map file ('{}')".format(x + i + 1, y + j + 1, self.lines[x + i][y + j]))
@@ -276,12 +276,12 @@ class Map:
 	def create_submaps(self):
 		self.lines = [ "".join([ self.lines[j][i] if i < len(self.lines[j]) else self.biome_none_tiles[0] for j in range(len(self.lines)) ]) for i in range(max([ len(line) for line in self.lines ])) ]
 		self.submaps = {
-			x // SUBMAP_SIZE: {
-				y // SUBMAP_SIZE: Submap(self, x, y)
-				for y in range(0, len(self.lines[x]), SUBMAP_SIZE)
+			x // self.game.submap_size: {
+				y // self.game.submap_size: Submap(self, x, y)
+				for y in range(0, len(self.lines[x]), self.game.submap_size)
 				if self.verify_submap(x, y)
 			}
-			for x in range(0, len(self.lines), SUBMAP_SIZE)
+			for x in range(0, len(self.lines), self.game.submap_size)
 		}
 		for submap in self.game.groups["submaps"]:
 			submap.link()
@@ -294,7 +294,7 @@ class Map:
 		self.alive.update()
 
 	def draw(self, surface):
-		self.rpos = self.entity.pos - vec(self.game.res[0]) / 2
+		self.rpos = self.entity.pos - vec(self.game.res) / 2
 		for submap in self.on_screen:
 			submap.draw(surface, self.rpos)
 		for submap in self.on_screen:
@@ -311,15 +311,3 @@ class Map:
 				submap.display.draw(surface, self.rpos)
 
 
-
-if __name__ == "__main__":
-	m_map = Map(None, "test")
-	print(m_map.lines)
-	print(m_map.submaps)
-	for x in m_map.submaps:
-		for y in m_map.submaps[x]:
-			print("{} {} {}".format(x, y, m_map.submaps[x][y].entities))
-			for i in m_map.submaps[x][y].tiles:
-				for j in i:
-					print(j, end= " ")
-				print()
