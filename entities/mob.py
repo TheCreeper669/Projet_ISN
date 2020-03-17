@@ -6,7 +6,7 @@ class Spider(entities.Entity):
 	def __init__(self, game, submap, pos= vec(0)):
 		entities.Entity.__init__(self, game, submap, pos)
 		self.game.groups["mobs"].add(self)
-		self.image = entities.Anim(self.game, DIR_IMAGE_ENTITIES + "spider/", (TILE_SIZE * 2, TILE_SIZE * 2))
+		self.image = entities.Anim(self.game, DIR_IMAGE_ENTITIES + "spider/", (self.game.tile_size * 2, self.game.tile_size * 2))
 		self.hitbox = entities.Hitbox(self, (1 / 2, 4 / 5), (2 / 5, 2 / 5), color= RED)
 		self.motion_orientation = vec(0)
 		self.friction_coef = -8

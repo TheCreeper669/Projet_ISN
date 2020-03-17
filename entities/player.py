@@ -7,12 +7,12 @@ class Player(entities.Entity):
 		entities.Entity.__init__(self, game, submap, pos)
 		self.game.groups["players"].add(self)
 		self.game.player = self
-		#self.image = entities.Image(pgp.pg.transform.scale(pgp.pg.image.load(DIR_IMAGE_ENTITIES + "player.png"), (TILE_SIZE * 2, TILE_SIZE * 2)))
-		self.image = entities.Anim(self.game, DIR_IMAGE_ENTITIES + "player/", (TILE_SIZE * 2, TILE_SIZE * 2))
-		self.hitbox = entities.Hitbox(self, (1 / 2, 4 / 5), (2 / 5, 2 / 5), color= RED)
+		#self.image = entities.Image(pgp.pg.transform.scale(pgp.pg.image.load(DIR_IMAGE_ENTITIES + "player.png"), (self.game.tile_size * 2, self.game.tile_size * 2)))
+		self.image = entities.Anim(self.game, DIR_IMAGE_ENTITIES + "player/", (self.game.tile_size * 2, self.game.tile_size * 2))
+		self.hitbox = entities.Hitbox(self, (1 / 2, 5 / 7), (2 / 7, 2 / 7), color= RED)
 		self.motion_orientation = vec(0)
-		self.friction_coef = -8
-		self.force_coef = -self.friction_coef * 256
+		self.friction_coef = -self.game.tile_size / 8
+		self.force_coef = -self.friction_coef * self.game.tile_size * 4
 		#max_speed = abs(self.force_coef / self.friction_coef)
 
 	def update(self):

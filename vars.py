@@ -15,11 +15,6 @@ CYAN = pglc.Color(0x00, 0xff, 0xff)
 def setAlpha(color, a):
 	return pglc.Color(color.r, color.g, color.b, a)
 
-# Map
-TILE_SIZE = 64
-SUBMAP_SIZE = 4
-OFF_SCREEN_ALIVE_SUBMAPS_RADIUS = 4
-
 # Keyboard
 K_MOTION_UP = pglc.K_UP
 K_MOTION_DOWN = pglc.K_DOWN
