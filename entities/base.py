@@ -219,26 +219,35 @@ class Entity(Sprite):
 	def collide(self, other):
 		if self.movable:
 			if other.movable:
-				self.forces += other.vel * other.mass
+				#print("{} collide {}".format(type(self).__name__, type(other).__name__))
+				from_other = (self.pos - other.pos) * other.mass * self.game.tile_size
+				#print(from_other)
+				self.forces += from_other
 			else:
 				posdiff = other.pos - self.pos
-				diff = vec(
-					posdiff.x + (other.hitbox.image.size[0] + self.hitbox.image.size[0]) / 2 * (-1 if posdiff.x > 0 else 1),
-					posdiff.y + (other.hitbox.image.size[1] + self.hitbox.image.size[1]) / 2 * (-1 if posdiff.y > 0 else 1)
-				)
-				#print("collide {}".format(diff))
+				#print("posdiff {}".format(posdiff))
+				diff = vec(0)
+				if posdiff.x >= 0:
+					diff.x = posdiff.x - (other.hitbox.image.size[0] + self.hitbox.image.size[0]) / 2 + 1
+				else:
+					diff.x = posdiff.x + (other.hitbox.image.size[0] + self.hitbox.image.size[0]) / 2
+				if posdiff.y >= 0:
+					diff.y = posdiff.y - (other.hitbox.image.size[1] + self.hitbox.image.size[1]) / 2 + 1
+				else:
+					diff.y = posdiff.y + (other.hitbox.image.size[1] + self.hitbox.image.size[1]) / 2
+				#print("diff {}".format(diff))
 				valid = vec(
-					diff.x * posdiff.x < 0 and self.vel.x * posdiff.x > 0 and abs(posdiff.x) >= abs(posdiff.y),
-					diff.y * posdiff.y < 0 and self.vel.y * posdiff.y > 0 and abs(posdiff.y) >= abs(posdiff.x)
+					diff.x * self.vel.x < 0 and abs(posdiff.x) >= abs(posdiff.y),
+					diff.y * self.vel.y < 0 and abs(posdiff.y) >= abs(posdiff.x)
 				)
-				#print("validity {}".format(valid))
-				if valid.x and ((abs(diff.y) <= abs(self.vel.y)) if valid.y else True):
+				#print("valid {}".format(valid))
+				if valid.x:
 					#print("x", end= "")
 					self.vel.x = 0
 					if self.acc.x * diff.x < 0:
 						self.acc.x = 0
 					self.pos.x += diff.x
-				if valid.y and ((abs(diff.x) <= abs(self.vel.x)) if valid.x else True):
+				if valid.y:
 					#print("y", end= "")
 					self.vel.y = 0
 					if self.acc.y * diff.y < 0:

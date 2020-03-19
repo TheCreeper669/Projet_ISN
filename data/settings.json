@@ -7,6 +7,7 @@
 	"keyboard": "default",
 	"draw_submap_info": true,
 	"draw_hitbox": true,
+	"generation_length": 16,
 	"tile_size": 64,
 	"submap_size": 4,
 	"off_screen_alive": 4
