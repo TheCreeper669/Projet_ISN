@@ -15,5 +15,6 @@
  * Installer [Pygame](https://www.pygame.org/wiki/GettingStarted)
  * Executer `__main__.py` avec python
 ### Or
- * Download https://mega.nz/#!OGA2zSob!DNlkoUNjIruvqoIVeH-JZjdTfOTL9vTZ32bwpiSbC_0
+ * Download [Projet ISN V0.4.1](https://mega.nz/#!OGA2zSob!DNlkoUNjIruvqoIVeH-JZjdTfOTL9vTZ32bwpiSbC_0)
+ * Un-Zip it
  * Execute `play.bat`
