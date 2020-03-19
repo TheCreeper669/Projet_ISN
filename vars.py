@@ -1,6 +1,7 @@
 import pygame.locals as pglc
 from pygame.math import Vector2 as vec
 import os
+from random import randint
 
 # Colors
 TRANSPARENT = pglc.Color(0x00, 0x00, 0x00, 0x00)

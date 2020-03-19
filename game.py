@@ -9,10 +9,7 @@ from map import *
 class Game:
 	def __init__(self):
 		self.load_settings()
-		if self.fullscreen:
-			self.window = pgp.pg.display.set_mode((self.display_info.current_w, self.display_info.current_h), pgp.pg.FULLSCREEN | pgp.pg.HWSURFACE | pgp.pg.DOUBLEBUF)
-		else:
-			self.window = pgp.pg.display.set_mode(self.res, pgp.pg.RESIZABLE | pgp.pg.HWSURFACE | pgp.pg.DOUBLEBUF)
+		self.window = pgp.pg.display.set_mode(self.res, pgp.pg.RESIZABLE)
 		self.rect = self.window.get_rect()
 		pgp.pg.display.set_caption(self.title)
 		pgp.pg.display.set_icon(pgp.pg.image.load(DIR_IMAGE_ICONS + self.icon))
@@ -23,9 +20,6 @@ class Game:
 		self.background_rect = self.background_image.get_rect()
 
 		self.display_info = pgp.pg.display.Info()
-		self.display_info
-		
-		self.dt = 0
 
 		self.groups = [
 			"all", "sprites", "entities", "submaps",
@@ -52,6 +46,7 @@ class Game:
 		self.draw_order = [
 			"fakewalls",
 			"walls",
+			"mobs",
 			"players"
 		]
 
@@ -81,7 +76,16 @@ class Game:
 														WHITE,
 														(0, 32 * 3))
 
-		self.map = Map(self, mapname= "test", biome= "test")
+		self.map = Map(self, mapname= "spider_test", biome= "test")
+		
+		self.pause = False
+
+		self.pause_mask = pgp.pg.Surface(self.res)
+		self.pause_mask.fill(BLACK)
+		self.pause_mask.set_alpha(64)
+		self.pause_mask_rect = self.pause_mask.get_rect()
+
+		self.dt = 0
 
 		# play main loop
 		for i in range(4):
@@ -108,20 +112,39 @@ class Game:
 		self.tile_size = settings["tile_size"]
 		self.submap_size = settings["submap_size"]
 		self.off_screen_alive = settings["off_screen_alive"]
+		self.generation_length = settings["generation_length"]
 
 	def loop(self):
 		self.dt = self.clock.tick(self.framerate)
-		self.events()
-		self.update()
-		self.draw()
+		if 1 / (2 * self.framerate) > self.dt or self.dt > 2 / self.framerate:
+			print("/!\\ LAG: {}fps or {}s/t | rather than {}fps or {}s/t".format(round(1 / self.dt), round(self.dt, 3), self.framerate, round(1 / self.framerate, 3)))
+			return
+		if not self.pause:
+			self.events()
+			self.update()
+			self.draw()
+		else:
+			self.events_pause()
+			self.update_pause()
+			self.draw_pause()
 
 	def set_res(self, new_res):
 		self.res = new_res
-		self.window = pgp.pg.display.set_mode(self.res, pgp.pg.RESIZABLE | pgp.pg.HWSURFACE | pgp.pg.DOUBLEBUF)
+
+		self.window = pgp.pg.display.set_mode(self.res, pgp.pg.RESIZABLE)
 		self.background_image = pgp.pg.Surface(self.res)
 		self.background_image.fill(BLACK)
 		self.background_rect = self.background_image.get_rect()
+
+		self.pause_mask = pgp.pg.Surface(self.res)
+		self.pause_mask.fill(BLACK)
+		self.pause_mask.set_alpha(64)
+		self.pause_mask_rect = self.pause_mask.get_rect()
+
 		self.on_screen = self.res.copy()
+		self.map.reset_followers()
+		self.map.reset_submaps_groups()
+
 		self.window = pgp.pg.display.set_mode(self.res)
 		self.rect = self.window.get_rect()
 
@@ -145,8 +168,11 @@ class Game:
 					self.on_screen = list(vec(self.on_screen) * (1 / 2 if self.on_screen == self.res else 2))
 					self.map.reset_followers()
 					self.map.reset_submaps_groups()
+				elif event.key == pgp.pg.K_ESCAPE:
+					self.pause = not self.pause
 
 			elif event.type == pgp.pg.VIDEORESIZE:
+				print(event)
 				self.set_res(list(event.size))
 					
 			elif event.type == pgp.pg.QUIT:
@@ -162,6 +188,36 @@ class Game:
 	def draw(self):
 		self.window.blit(self.background_image, self.background_rect)
 		self.map.draw(self.window)
+		for group in self.manual_draw_order:
+			for sprite in group:
+				sprite.draw(self.window, self.map.rpos)
+		pgp.pg.display.flip()
+
+	def events_pause(self):
+		self.keys = pg.key.get_pressed()
+		for event in pg.event.get():
+			if event.type == pgp.pg.KEYDOWN:
+				if event.key == pgp.pg.K_ESCAPE:
+					self.pause = not self.pause
+					if self.pause:
+						self.paused_surface = self.window.copy()
+						self.paused_surface_rect = self.paused_surface.get_rect()
+
+			elif event.type == pgp.pg.VIDEORESIZE:
+				print(event)
+				self.set_res(list(event.size))
+					
+			elif event.type == pgp.pg.QUIT:
+				self.stop = True
+
+	def update_pause(self):
+		for group in self.manual_update_order:
+			group.update()
+
+	def draw_pause(self):
+		self.window.blit(self.background_image, self.background_rect)
+		self.map.draw(self.window)
+		self.window.blit(self.pause_mask, self.pause_mask_rect)
 		for group in self.manual_draw_order:
 			for sprite in group:
 				sprite.draw(self.window, self.map.rpos)
