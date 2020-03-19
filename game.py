@@ -76,7 +76,7 @@ class Game:
 														WHITE,
 														(0, 32 * 3))
 
-		self.map = Map(self, mapname= "spider_test", biome= "test")
+		self.map = Map(self, self.mapname, self.biome)
 		
 		self.pause = False
 
@@ -113,6 +113,8 @@ class Game:
 		self.submap_size = settings["submap_size"]
 		self.off_screen_alive = settings["off_screen_alive"]
 		self.generation_length = settings["generation_length"]
+		self.mapname = settings["mapname"]
+		self.biome = settings["biome"]
 
 	def loop(self):
 		self.dt = self.clock.tick(self.framerate)
@@ -165,7 +167,7 @@ class Game:
 				elif event.key == pgp.pg.K_j:
 					self.draw_submap_info = not self.draw_submap_info
 				elif event.key == pgp.pg.K_k:
-					self.on_screen = list(vec(self.on_screen) * (1 / 2 if self.on_screen == self.res else 2))
+					self.on_screen = list(vec(self.on_screen) * (1 / 16 if self.on_screen == self.res else 16))
 					self.map.reset_followers()
 					self.map.reset_submaps_groups()
 				elif event.key == pgp.pg.K_ESCAPE:

@@ -9,7 +9,7 @@ import json_handler as json
 
 class Tile(entities.Sprite):
 	def __init__(self, game, submap, image, x, y):
-		entities.Sprite.__init__(self, game)
+		entities.Sprite.__init__(self, game, vec(0))
 		self.submap = submap
 		self.image = image
 		self.image.topleft = x, y
@@ -56,7 +56,7 @@ class VirtualEntity:
 
 class Submap(entities.Sprite):
 	def __init__(self, m_map, x, y, empty= False):
-		entities.Sprite.__init__(self, m_map.game)
+		entities.Sprite.__init__(self, m_map.game, vec(0))
 		self.game.groups["submaps"].add(self)
 		self.submap_pos = vec(x // self.game.submap_size, y // self.game.submap_size)
 		self.pos = self.submap_pos * self.game.submap_size * self.game.tile_size
@@ -128,14 +128,14 @@ class Submap(entities.Sprite):
 		sprite.submap = None
 
 	def add_entity(self, entity):
-		print("entity {} added to {}".format(entity, self.submap_pos))
+		#print("entity {} added to {}".format(entity, self.submap_pos))
 		self.entities.add(entity)
 		if entity in self.game.groups["find_submap_entities"]:
 			self.game.groups["find_submap_entities"].remove(entity)
 		entity.submap = self
 
 	def remove_entity(self, entity):
-		print("entity {} removed from {}".format(entity, self.submap_pos))
+		#print("entity {} removed from {}".format(entity, self.submap_pos))
 		self.entities.remove(entity)
 		self.game.groups["find_submap_entities"].add(entity)
 		entity.submap = None
@@ -198,7 +198,7 @@ class Submap(entities.Sprite):
 
 class Follower(entities.Sprite):
 	def __init__(self, game, entity, size):
-		entities.Sprite.__init__(self, game)
+		entities.Sprite.__init__(self, game, vec(0))
 		self.image = entities.Image(pgp.pg.Surface(size))
 		self.entity = entity
 		self.image.center = self.entity.pos
@@ -219,8 +219,8 @@ class Map:
 		self.create_submaps()
 		self.entity = self.game.player
 		self.rpos = self.entity.pos - vec(self.game.res) / 2
-		self.on_screen_follower = Follower(self.game, self.entity, self.game.on_screen)
-		self.alive_follower = Follower(self.game, self.entity, (self.game.on_screen[0] + self.game.tile_size * self.game.submap_size * self.game.off_screen_alive * 2, self.game.on_screen[1] + self.game.tile_size * self.game.submap_size * self.game.off_screen_alive * 2))
+		self.on_screen_follower = Follower(self.game, self.entity, vec(self.game.on_screen).elementwise() + self.game.tile_size * self.game.submap_size * 2)
+		self.alive_follower = Follower(self.game, self.entity, vec(self.game.on_screen).elementwise() + self.game.tile_size * self.game.submap_size * self.game.off_screen_alive * 2)
 		self.on_screen = pgp.pg.sprite.Group()
 		self.alive = pgp.pg.sprite.Group()
 		self.dead = self.game.groups["submaps"].copy()
@@ -238,8 +238,8 @@ class Map:
 		self.virtual_entities = { entity: VirtualEntity(self, self.biome_entities[entity]) for entity in self.biome_entities }
 
 	def reset_followers(self):
-		self.on_screen_follower.image.size = self.game.on_screen
-		self.alive_follower.image.size = self.game.on_screen[0] + self.game.tile_size * self.game.submap_size * self.game.off_screen_alive * 2, self.game.on_screen[1] + self.game.tile_size * self.game.submap_size * self.game.off_screen_alive * 2
+		self.on_screen_follower.image.size = vec(self.game.on_screen).elementwise() + self.game.tile_size * self.game.submap_size * 2
+		self.alive_follower.image.size = vec(self.game.on_screen).elementwise() + self.game.tile_size * self.game.submap_size * self.game.off_screen_alive * 2
 
 	def reset_submaps_groups(self):
 		self.dead.add(self.on_screen)
