@@ -3,7 +3,7 @@ from vars import *
 import entities.base as entities
 
 class Spider(entities.Entity):
-	def __init__(self, game, submap, pos= vec(0)):
+	def __init__(self, game, submap, pos):
 		entities.Entity.__init__(self, game, submap, pos)
 		self.game.groups["mobs"].add(self)
 		self.game.groups["mobs"].add(self)
@@ -12,7 +12,7 @@ class Spider(entities.Entity):
 		self.friction_coef = -8
 		self.force_coef = -self.friction_coef * 128
 		#max_speed = abs(self.force_coef / self.friction_coef)
-		self.follow_range = self.game.tile_size * 7
+		self.follow_range = self.game.tile_size * 16
 		self.attack_range = self.game.tile_size
 		self.attacking = False
 		self.moving = False

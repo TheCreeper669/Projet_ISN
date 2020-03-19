@@ -5,10 +5,12 @@
 	"title": "[Projet ISN]",
 	"icon": "256.png",
 	"keyboard": "default",
-	"draw_submap_info": true,
-	"draw_hitbox": true,
+	"draw_submap_info": false,
+	"draw_hitbox": false,
 	"generation_length": 16,
 	"tile_size": 64,
-	"submap_size": 4,
-	"off_screen_alive": 4
+	"submap_size": 2,
+	"off_screen_alive": 4,
+	"mapname": "maze",
+	"biome": "test"
 }

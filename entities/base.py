@@ -96,7 +96,7 @@ class Anim(Image):
 
 
 class Sprite(pgp.pg.sprite.Sprite):
-	def __init__(self, game, pos= vec(0), submap= None):
+	def __init__(self, game, pos, submap= None):
 		pgp.pg.sprite.Sprite.__init__(self)
 		self.game = game
 		self.game.groups["sprites"].add(self)
@@ -135,7 +135,7 @@ def not_collide(a, b):
 
 class Hitbox(Sprite):
 	def __init__(self, sprite, rpos= (1 / 2, 1 / 2), coef= (1, 1), color= RED):
-		Sprite.__init__(self, sprite.game)
+		Sprite.__init__(self, sprite.game, vec(0))
 		self.sprite = sprite
 		self.game.groups["hitboxs"].add(self)
 		self.rpos = vec(rpos)
@@ -182,7 +182,7 @@ def get_orientation(keys, keyboard, key_up, key_down, key_left, key_right):
 	return orientation
 
 class Entity(Sprite):
-	def __init__(self, game, submap, pos= vec(0)):
+	def __init__(self, game, submap, pos):
 		Sprite.__init__(self, game, pos, submap)
 		self.game.groups["entities"].add(self)
 		self.acc = vec(0)
@@ -228,11 +228,11 @@ class Entity(Sprite):
 				#print("posdiff {}".format(posdiff))
 				diff = vec(0)
 				if posdiff.x >= 0:
-					diff.x = posdiff.x - (other.hitbox.image.size[0] + self.hitbox.image.size[0]) / 2 + 1
+					diff.x = posdiff.x - (other.hitbox.image.size[0] + self.hitbox.image.size[0]) / 2
 				else:
 					diff.x = posdiff.x + (other.hitbox.image.size[0] + self.hitbox.image.size[0]) / 2
 				if posdiff.y >= 0:
-					diff.y = posdiff.y - (other.hitbox.image.size[1] + self.hitbox.image.size[1]) / 2 + 1
+					diff.y = posdiff.y - (other.hitbox.image.size[1] + self.hitbox.image.size[1]) / 2
 				else:
 					diff.y = posdiff.y + (other.hitbox.image.size[1] + self.hitbox.image.size[1]) / 2
 				#print("diff {}".format(diff))
@@ -246,13 +246,13 @@ class Entity(Sprite):
 					self.vel.x = 0
 					if self.acc.x * diff.x < 0:
 						self.acc.x = 0
-					self.pos.x += diff.x
+					self.pos.x += diff.x + (posdiff.x >= 0)
 				if valid.y:
 					#print("y", end= "")
 					self.vel.y = 0
 					if self.acc.y * diff.y < 0:
 						self.acc.y = 0
-					self.pos.y += diff.y
+					self.pos.y += diff.y + (posdiff.y >= 0)
 				#print("\n")
 				self.update_pos()
 

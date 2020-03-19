@@ -5,7 +5,7 @@ import entities.base as entities
 
 
 class FakeWall(entities.Sprite):
-	def __init__(self, game, pos= vec(0), submap= None):
+	def __init__(self, game, pos, submap):
 		entities.Sprite.__init__(self, game, pos, submap)
 		self.game.groups["fakewalls"].add(self)
 		self.image = entities.Image(pgp.pg.transform.scale(pgp.pg.image.load(DIR_IMAGE_SPRITES + "fakewall.png"), (self.game.tile_size, self.game.tile_size)))
@@ -13,20 +13,20 @@ class FakeWall(entities.Sprite):
 
 
 class Stationary(entities.Entity):
-	def __init__(self, game, submap, pos= vec(0)):
+	def __init__(self, game, submap, pos):
 		entities.Entity.__init__(self, game, submap, pos)
 		self.game.groups["stationaries"].add(self)
 		self.movable = False
 
 class Wall(Stationary):
-	def __init__(self, game, submap, pos= vec(0)):
+	def __init__(self, game, submap, pos):
 		Stationary.__init__(self, game, submap, pos)
 		self.game.groups["walls"].add(self)
 		self.image = entities.Image(pgp.pg.transform.scale(pgp.pg.image.load(DIR_IMAGE_ENTITIES + "wall.png"), (self.game.tile_size, self.game.tile_size)))
 		self.hitbox = entities.Hitbox(self, color= BLUE)
 
 class BigWall(Stationary):
-	def __init__(self, game, submap, pos= vec(0), size= vec(1, 1)):
+	def __init__(self, game, submap, pos, size= vec(1, 1)):
 		Stationary.__init__(self, game, submap, pos)
 		self.game.groups["walls"].add(self)
 		self.image = entities.Image(pgp.pg.transform.scale(pgp.pg.image.load(DIR_IMAGE_ENTITIES + "wall.png"), (self.game.tile_size, self.game.tile_size)))
