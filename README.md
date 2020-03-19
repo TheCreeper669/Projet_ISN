@@ -16,4 +16,5 @@
  * Executer `__main__.py` avec python
 ### Or
  * Download [Projet ISN V0.4.2]()
+ * Un-Zip it
  * Execute `play.bat`
