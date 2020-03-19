@@ -131,9 +131,16 @@ class Game:
 			self.draw_pause()
 
 	def set_res(self, new_res):
+		if new_res[0] < 1280:
+			new_res[0] = 1280
+		if new_res[1] < 720:
+			new_res[1] = 720
+
 		self.res = new_res
 
 		self.window = pgp.pg.display.set_mode(self.res, pgp.pg.RESIZABLE)
+		self.rect = self.window.get_rect()
+
 		self.background_image = pgp.pg.Surface(self.res)
 		self.background_image.fill(BLACK)
 		self.background_rect = self.background_image.get_rect()
@@ -146,9 +153,6 @@ class Game:
 		self.on_screen = self.res.copy()
 		self.map.reset_followers()
 		self.map.reset_submaps_groups()
-
-		self.window = pgp.pg.display.set_mode(self.res)
-		self.rect = self.window.get_rect()
 
 	def events(self):
 		self.keys = pg.key.get_pressed()
@@ -174,8 +178,7 @@ class Game:
 					self.pause = not self.pause
 
 			elif event.type == pgp.pg.VIDEORESIZE:
-				print(event)
-				self.set_res(list(event.size))
+				self.set_res([event.w, event.h])
 					
 			elif event.type == pgp.pg.QUIT:
 				self.stop = True
