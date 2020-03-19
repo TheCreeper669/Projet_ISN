@@ -14,3 +14,6 @@
  * Installer [Python 3(.7)](https://www.python.org/downloads/)
  * Installer [Pygame](https://www.pygame.org/wiki/GettingStarted)
  * Executer `__main__.py` avec python
+### Or
+ * Download https://mega.nz/#!OGA2zSob!DNlkoUNjIruvqoIVeH-JZjdTfOTL9vTZ32bwpiSbC_0
+ * Execute `play.bat`
