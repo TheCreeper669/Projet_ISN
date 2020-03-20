@@ -7,9 +7,9 @@
 	"keyboard": "default",
 	"draw_submap_info": false,
 	"draw_hitbox": false,
-	"generation_length": 16,
+	"generation_length": 8,
 	"tile_size": 64,
-	"submap_size": 2,
+	"submap_size": 4,
 	"off_screen_alive": 4,
 	"mapname": "maze",
 	"biome": "test"
