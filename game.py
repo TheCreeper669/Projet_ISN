@@ -24,7 +24,7 @@ class Game:
 		self.groups = [
 			"all", "sprites", "entities", "submaps",
 			"displays", "fix_displays", "hitboxs", "fakewalls",
-			"players", "mobs", "stationaries", "walls",
+			"players", "mobs", "stationaries", "walls", "spells",
 			"find_submap_sprites", "find_submap_entities"
 		]
 
@@ -47,6 +47,7 @@ class Game:
 			"fakewalls",
 			"walls",
 			"mobs",
+			"spells",
 			"players"
 		]
 
@@ -87,7 +88,6 @@ class Game:
 
 		self.dt = 0
 
-		# play main loop
 		for i in range(4):
 			self.clock.tick(self.framerate)
 		self.stop = False
@@ -96,9 +96,9 @@ class Game:
 
 	def load_settings(self):
 		settings = json.load(FILE_SETTINGS)
+		self.minres = settings["minres"]
 		self.res = settings["res"]
 		self.on_screen = self.res.copy()
-		self.fullscreen = settings["fullscreen"]
 		self.title = settings["title"]
 		self.icon = settings["icon"]
 		self.framerate = settings["framerate"]
@@ -118,9 +118,10 @@ class Game:
 
 	def loop(self):
 		self.dt = self.clock.tick(self.framerate)
-		if 1 / (2 * self.framerate) > self.dt or self.dt > 2 / self.framerate:
-			print("/!\\ LAG: {}fps or {}s/t | rather than {}fps or {}s/t".format(round(1 / self.dt), round(self.dt, 3), self.framerate, round(1 / self.framerate, 3)))
-			return
+		if self.framerate != 0:
+			if 1 / (2 * self.framerate) > self.dt or self.dt > 2 / self.framerate:
+				print("/!\\ LAG: {}fps or {}s/t | rather than {}fps or {}s/t".format(round(1 / self.dt), round(self.dt, 3), self.framerate, round(1 / self.framerate, 3)))
+				return
 		if not self.pause:
 			self.events()
 			self.update()
@@ -131,10 +132,10 @@ class Game:
 			self.draw_pause()
 
 	def set_res(self, new_res):
-		if new_res[0] < 1280:
-			new_res[0] = 1280
-		if new_res[1] < 720:
-			new_res[1] = 720
+		if new_res[0] < self.minres[0]:
+			new_res[0] = self.minres[0]
+		if new_res[1] < self.minres[1]:
+			new_res[1] = self.minres[1]
 
 		self.res = new_res
 

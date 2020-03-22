@@ -45,6 +45,9 @@ class Image(pgp.pg.Rect):
 
 
 class Anim(Image):
+	frames = {}
+	default_frames = {}
+
 	def __init__(self, game, folder, size):
 		Image.__init__(self, pgp.pg.Surface((1, 1)))
 		self.game = game
@@ -54,18 +57,37 @@ class Anim(Image):
 		self.current_value = None
 		self.current_anim = self.default_anim
 		self.counter = 0
+		self.load_frames()
 		self.change_anim([0, 0])
 		self.update(anim= False)
 
 	def load_info(self):
 		self.info = json.load(self.folder + "info.json")
-		self.step = int(self.info["step"] * self.game.framerate)
+		if self.game.framerate != 0:
+			self.step = int(self.info["step"] * self.game.framerate)
+		else:
+			self.step = int(self.info["step"] * 60)
 		self.names = self.info["names"]
 		self.anims = self.info["anims"]
 		self.values = self.info["values"]
 		self.default_frame = self.info["default_frame"]
 		self.no_change_value = self.info["no_change_value"]
 		self.default_anim = self.info["default_anim"]
+
+	def load_frames(self):
+		if self.folder not in self.frames:
+			self.frames[self.folder] = self.anims.copy()
+			self.anims = self.frames[self.folder]
+			for anim in self.anims:
+				for frame in range(len(self.anims[anim])):
+					self.anims[anim][frame] = pgp.pg.transform.scale(pgp.pg.image.load(self.folder + anim + "/" + self.anims[anim][frame] + ".png"), self.size)
+			self.default_anim = self.anims[self.default_anim]
+			self.default_frames[self.folder] = { anim: pgp.pg.transform.scale(pgp.pg.image.load(self.folder + anim + "/" + self.default_frame[anim] + ".png"), self.size) for anim in self.anims }
+			self.default_frame = self.default_frames[self.folder]
+		else:
+			self.anims = self.frames[self.folder]
+			self.default_anim = self.anims[self.default_anim]
+			self.default_frame = self.default_frames[self.folder]
 
 	def get_anim_by_value(self, value):
 		for anim in self.values:
@@ -87,9 +109,9 @@ class Anim(Image):
 				self.counter *= self.step - 1
 			else:
 				self.counter -= 1
-			self.reset_surface(pgp.pg.transform.scale(pgp.pg.image.load(self.folder + self.current_anim + "/" + self.anims[self.current_anim][self.counter // self.step] + ".png"), self.size))
+			self.reset_surface(self.anims[self.current_anim][self.counter // self.step])
 		else:
-			self.reset_surface(pgp.pg.transform.scale(pgp.pg.image.load(self.folder + self.current_anim + "/" + self.default_frame[self.current_anim] + ".png"), self.size))
+			self.reset_surface(self.default_frame[self.current_anim])
 
 
 
@@ -190,6 +212,7 @@ class Entity(Sprite):
 		self.friction_coef = 0
 		self.forces = vec(0)
 		self.mass = 1
+		self.life = 1
 		# bools
 		self.movable = True
 
@@ -201,6 +224,8 @@ class Entity(Sprite):
 			self.pos += self.vel * self.game.dt
 			self.forces = vec(0)
 		self.update_pos()
+		if self.life <= 0 and self.submap is not None:
+			self.submap.remove_entity(self)
 
 	def update_pos(self):
 		self.image.center = self.pos + self.hitbox.rcenter
@@ -237,23 +262,29 @@ class Entity(Sprite):
 					diff.y = posdiff.y + (other.hitbox.image.size[1] + self.hitbox.image.size[1]) / 2
 				#print("diff {}".format(diff))
 				valid = vec(
-					diff.x * self.vel.x < 0 and abs(posdiff.x) >= abs(posdiff.y),
-					diff.y * self.vel.y < 0 and abs(posdiff.y) >= abs(posdiff.x)
+					abs(posdiff.x) > abs(posdiff.y),
+					abs(posdiff.y) > abs(posdiff.x)
 				)
 				#print("valid {}".format(valid))
-				if valid.x:
+				if valid.x and not valid.y:
 					#print("x", end= "")
-					self.vel.x = 0
+					if self.vel.x * diff.x < 0:
+						self.vel.x = 0
 					if self.acc.x * diff.x < 0:
 						self.acc.x = 0
 					self.pos.x += diff.x + (posdiff.x >= 0)
-				if valid.y:
+				if valid.y and not valid.x:
 					#print("y", end= "")
-					self.vel.y = 0
+					if self.vel.y * diff.y < 0:
+						self.vel.y = 0
 					if self.acc.y * diff.y < 0:
 						self.acc.y = 0
 					self.pos.y += diff.y + (posdiff.y >= 0)
-				#print("\n")
+				#print()
 				self.update_pos()
 
+	def attack(self, other):
+		if other.movable:
+			other.forces += self.vel * self.mass
+			other.life -= 1
 

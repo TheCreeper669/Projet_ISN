@@ -65,6 +65,7 @@ class Submap(entities.Sprite):
 		self.content = pgp.pg.sprite.Group()
 		self.sprites = pgp.pg.sprite.Group()
 		self.entities = pgp.pg.sprite.Group()
+		self.movable = pgp.pg.sprite.Group()
 		self.collidable = self.entities.copy()
 		if not empty:
 			for i in range(self.game.submap_size):
@@ -133,12 +134,16 @@ class Submap(entities.Sprite):
 		if entity in self.game.groups["find_submap_entities"]:
 			self.game.groups["find_submap_entities"].remove(entity)
 		entity.submap = self
+		if entity.movable:
+			self.movable.add(entity)
 
 	def remove_entity(self, entity):
 		#print("entity {} removed from {}".format(entity, self.submap_pos))
 		self.entities.remove(entity)
 		self.game.groups["find_submap_entities"].add(entity)
 		entity.submap = None
+		if entity in self.movable:
+			self.movable.remove(entity)
 
 	def update(self):
 		# sprites
@@ -157,7 +162,7 @@ class Submap(entities.Sprite):
 		# entities
 		for entity in self.entities:
 			entity.update()
-		for entity in self.collidable:
+		for entity in self.movable:
 			self.collidable.remove(entity)
 			for submap in self.links:
 				for collided in pgp.pg.sprite.spritecollide(entity, submap.collidable, dokill= False, collided= entities.collide):
