@@ -7,11 +7,7 @@
 	"keyboard": "default",
 	"draw_submap_info": false,
 	"draw_hitbox": false,
-<<<<<<< HEAD
-	"generation_length": 8,
-=======
 	"generation_length": 0,
->>>>>>> V0.4.2
 	"tile_size": 64,
 	"submap_size": 4,
 	"off_screen_alive": 4,
