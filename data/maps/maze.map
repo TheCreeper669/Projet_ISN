@@ -1,11 +1,19 @@
          fff
       fffWWWfff
    fffWWW---WWWfff
+<<<<<<< HEAD
   fWWW-----s---WWWf
   fW---W-s-------Wf
   fWWWWW-----s---Wf
  fW----W--s-------Wf
  fW-W--W------s---Wf
+=======
+  fWWW----s----WWWf
+  fW-s-W------s--Wf
+  fWWWWW----s----Wf
+ fW----W-s--------Wf
+ fW-W--W-------s--Wf
+>>>>>>> V0.4.2
  fW-W----WWW------Wf
 fW-WW-WWW---W------Wf
 fW--------p-W------Wf
@@ -15,7 +23,7 @@ fWWWWWW-W---W------Wf
  fW---------------Wf
   fW-------------Wf
   fW-------------Wf
-  fW-----------WWWf
+  fWWW---------WWWf
    fffWWW---WWWfff
       fffWWWfff
          fff

@@ -14,9 +14,15 @@ class Display(entities.Sprite):
 			self.image = entities.Image(self.game.font.render(str(self.content), True, self.color))
 		self.image.topleft = self.pos
 
-	def update(self, pos= None):
+	def update(self, pos= None, content= None):
+		if pos is not None:
+			self.pos = pos
+		if content is not None:
+			self.content = content
 		if isinstance(self.content, type(lambda: None)):
 			self.image.reset_surface(self.game.font.render(self.content(self.game), True, self.color))
+		else:
+			self.image = entities.Image(self.game.font.render(str(self.content), True, self.color))
 		self.image.topleft = self.pos
 
 class FixDisplay(Display):

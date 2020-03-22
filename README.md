@@ -4,7 +4,7 @@
  Projet en binome pour la classe d'ISN en Terminal\
  Jeu en vue isométrique en python avec pygame\
  Inspiré du jeu The Binding Of Isaac d'Edmund McMillen\
- __Vers:__ 0.4.1
+ __Vers:__ 0.4.2
 
 ## Auteurs
  * [Maxence MICHOT](https://github.com/VokunGahrotLaas)
@@ -15,5 +15,9 @@
  * Installer [Pygame](https://www.pygame.org/wiki/GettingStarted)
  * Executer `__main__.py` avec python
 ### Ou
+<<<<<<< HEAD
  * Télécharger [Projet ISN V0.4.1](https://mega.nz/#F!LeAkTaDC!blde4DjQE5g5noTDRp3zcg)
+=======
+ * Télécharger [Projet ISN V0.4.2](https://mega.nz/#F!LbwWAAzB!zvUpSVZYXDTQ7nf5iBkw1A)
+>>>>>>> V0.4.2
  * Lancer `play.bat`
