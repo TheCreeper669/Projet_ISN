@@ -16,7 +16,7 @@
  * __Pause:__ échap
  * __Monter / Cacher les masques de collisions:__ H
  * __Monter / Cacher les sous-cartes:__ J
- * __Entrer / Sortir du mode de vue raccourcis:__ H
+ * __Entrer / Sortir du mode de vue raccourcis:__ K
 
 ## Installer
  * Installer [Python 3(.7)](https://www.python.org/downloads/)
