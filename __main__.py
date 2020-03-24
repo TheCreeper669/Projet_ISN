@@ -1,7 +1,7 @@
 from game import *
 
-pg.init()
+pgp.pg.init()
 Game()
-pg.quit()
+pgp.pg.quit()
 
 

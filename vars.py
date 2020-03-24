@@ -17,16 +17,10 @@ def setAlpha(color, a):
 	return pglc.Color(color.r, color.g, color.b, a)
 
 # Keyboard
-K_MOTION_UP = pglc.K_UP
-K_MOTION_DOWN = pglc.K_DOWN
-K_MOTION_LEFT = pglc.K_LEFT
-K_MOTION_RIGHT = pglc.K_RIGHT
+K_MOTION_UP, K_MOTION_DOWN, K_MOTION_LEFT, K_MOTION_RIGHT = pglc.K_w, pglc.K_s, pglc.K_a, pglc.K_d
 K_MOTION = (K_MOTION_UP, K_MOTION_DOWN, K_MOTION_LEFT, K_MOTION_RIGHT)
 
-K_WEAPON_UP = pglc.K_w
-K_WEAPON_DOWN = pglc.K_s
-K_WEAPON_LEFT = pglc.K_a
-K_WEAPON_RIGHT = pglc.K_d
+K_WEAPON_UP, K_WEAPON_DOWN, K_WEAPON_LEFT, K_WEAPON_RIGHT = pglc.K_UP, pglc.K_DOWN, pglc.K_LEFT, pglc.K_RIGHT
 K_WEAPON = (K_WEAPON_UP, K_WEAPON_DOWN, K_WEAPON_LEFT, K_WEAPON_RIGHT)
 
 # Directories

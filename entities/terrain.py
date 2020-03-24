@@ -1,5 +1,6 @@
 import pygamepp as pgp
 from vars import *
+
 import entities.base as entities
 
 
@@ -12,22 +13,16 @@ class FakeWall(entities.Sprite):
 
 
 
-class Stationary(entities.Entity):
+class Wall(entities.Obstacle):
 	def __init__(self, game, submap, pos):
-		entities.Entity.__init__(self, game, submap, pos)
-		self.game.groups["stationaries"].add(self)
-		self.movable = False
-
-class Wall(Stationary):
-	def __init__(self, game, submap, pos):
-		Stationary.__init__(self, game, submap, pos)
+		entities.Obstacle.__init__(self, game, submap, pos)
 		self.game.groups["walls"].add(self)
 		self.image = entities.Image(pgp.pg.transform.scale(pgp.pg.image.load(DIR_IMAGE_ENTITIES + "wall.png"), (self.game.tile_size, self.game.tile_size)))
 		self.hitbox = entities.Hitbox(self, color= BLUE)
 
-class BigWall(Stationary):
+class BigWall(entities.Obstacle):
 	def __init__(self, game, submap, pos, size= vec(1, 1)):
-		Stationary.__init__(self, game, submap, pos)
+		entities.Obstacle.__init__(self, game, submap, pos)
 		self.game.groups["walls"].add(self)
 		self.image = entities.Image(pgp.pg.transform.scale(pgp.pg.image.load(DIR_IMAGE_ENTITIES + "wall.png"), (self.game.tile_size, self.game.tile_size)))
 		self.image.stack(size)

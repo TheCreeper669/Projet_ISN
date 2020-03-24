@@ -1,7 +1,7 @@
 import pygamepp as pgp
 from vars import *
+
 import entities.base as entities
-import entities.display as display
 
 class Spider(entities.Entity):
 	def __init__(self, game, submap, pos):
@@ -17,7 +17,7 @@ class Spider(entities.Entity):
 		self.attacking = False
 		self.moving = False
 		self.life = 3
-		self.life_display = display.Display(self.game, self.life, RED, self.pos)
+		self.life_display_color = RED
 
 	def update(self):
 		self.attacking = False

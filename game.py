@@ -1,5 +1,4 @@
 import pygamepp as pgp
-pg = pgp.pg
 
 from vars import *
 import json_handler as json
@@ -14,7 +13,9 @@ class Game:
 		pgp.pg.display.set_caption(self.title)
 		pgp.pg.display.set_icon(pgp.pg.image.load(DIR_IMAGE_ICONS + self.icon))
 		self.clock = pgp.time.Clock()
+		self.little_font = pgp.pg.font.Font(pgp.pg.font.get_default_font(), 16)
 		self.font = pgp.pg.font.Font(pgp.pg.font.get_default_font(), 32)
+		self.big_font = pgp.pg.font.Font(pgp.pg.font.get_default_font(), 128)
 		self.background_image = pgp.pg.Surface(self.res)
 		self.background_image.fill(BLACK)
 		self.background_rect = self.background_image.get_rect()
@@ -22,10 +23,9 @@ class Game:
 		self.display_info = pgp.pg.display.Info()
 
 		self.groups = [
-			"all", "sprites", "entities", "submaps",
+			"all", "sprites", "obstacles", "entities", "submaps",
 			"displays", "fix_displays", "hitboxs", "fakewalls",
-			"players", "mobs", "stationaries", "walls", "spells",
-			"find_submap_sprites", "find_submap_entities"
+			"players", "mobs", "walls", "spells"
 		]
 
 		self.groups = { s: pgp.pg.sprite.Group() for s in self.groups }
@@ -54,22 +54,22 @@ class Game:
 		self.draw_order = [ self.groups[s] for s in self.draw_order ]
 
 		self.player = None
-		self.framerate_display = entities.display.FixDisplay(self, lambda game: "fps: " + str(int(game.clock.get_fps())), WHITE, (0, 0))
-		self.acc_display = entities.display.FixDisplay(	self,
+		self.framerate_display = entities.FixDisplay(self, lambda game: "fps: " + str(int(game.clock.get_fps())), WHITE, (0, 0))
+		self.acc_display = entities.FixDisplay(	self,
 														lambda game: "acc: {}".format((
 															round(game.player.acc.x, 2),
 															round(game.player.acc.y, 2)
 														) if game.player is not None else None),
 														WHITE,
 														(0, 32))
-		self.vel_display = entities.display.FixDisplay(	self,
+		self.vel_display = entities.FixDisplay(	self,
 														lambda game: "vel: {}".format((
 															round(game.player.vel.x, 2),
 															round(game.player.vel.y, 2)
 														) if game.player is not None else None),
 														WHITE,
 														(0, 32 * 2))
-		self.pos_display = entities.display.FixDisplay(	self,
+		self.pos_display = entities.FixDisplay(	self,
 														lambda game: "pos: {}".format((
 															round(game.player.pos.x, 2),
 															round(game.player.pos.y, 2)
@@ -156,8 +156,8 @@ class Game:
 		self.map.reset_submaps_groups()
 
 	def events(self):
-		self.keys = pg.key.get_pressed()
-		for event in pg.event.get():
+		self.keys = pgp.pg.key.get_pressed()
+		for event in pgp.pg.event.get():
 			if event.type == pgp.pg.KEYDOWN:
 				"""if event.key == pgp.pg.K_F11:
 					self.fullscreen = not self.fullscreen
@@ -188,8 +188,6 @@ class Game:
 		self.map.update()
 		for group in self.manual_update_order:
 			group.update()
-		for sprite in self.groups["find_submap_sprites"]: sprite.kill()
-		for entity in self.groups["find_submap_entities"]: entity.kill()
 
 	def draw(self):
 		self.window.blit(self.background_image, self.background_rect)
@@ -200,8 +198,8 @@ class Game:
 		pgp.pg.display.flip()
 
 	def events_pause(self):
-		self.keys = pg.key.get_pressed()
-		for event in pg.event.get():
+		self.keys = pgp.pg.key.get_pressed()
+		for event in pgp.pg.event.get():
 			if event.type == pgp.pg.KEYDOWN:
 				if event.key == pgp.pg.K_ESCAPE:
 					self.pause = not self.pause
@@ -228,5 +226,11 @@ class Game:
 			for sprite in group:
 				sprite.draw(self.window, self.map.rpos)
 		pgp.pg.display.flip()
+
+	def gameover(self):
+		self.pause = True
+		self.gameover_display = entities.FixDisplay(self, "GAME OVER", WHITE, (self.res[0] // 2, self.res[1] // 2), font= self.big_font)
+		self.gameover_display.pos -= vec(self.gameover_display.image.size) / 2
+		self.gameover_display.update()
 
 
