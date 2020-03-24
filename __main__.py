@@ -1,7 +1,5 @@
 from game import *
 
-pgp.pg.init()
+pygame.init()
 Game()
-pgp.pg.quit()
-
-
+pygame.quit()

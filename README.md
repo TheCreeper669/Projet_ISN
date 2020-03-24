@@ -14,7 +14,6 @@
  * __Se déplacer:__ Z / Q / S / D
  * __Tirer:__ Haut / Gauche / Bas / Droite
  * __Pause:__ échap
-\
  * __Monter / Cacher les masques de collisions:__ H
  * __Monter / Cacher les sous-cartes:__ J
  * __Entrer / Sortir du mode de vue raccourcis:__ H

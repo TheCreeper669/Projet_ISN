@@ -1,4 +1,5 @@
 import pygamepp as pgp
+pygame = pgp.pg
 
 from vars import *
 import json_handler as json
