@@ -1,8 +1,8 @@
 # Crédits
 
-##Programmation:
+## Programmation:
  * [Maxence MICHOT](https://github.com/VokunGahrotLaas)
  * [Cédric Marty](https://github.com/cececoul)
 
-##Images / Animations:
+## Images / Animations:
  * Esteban Esnault
