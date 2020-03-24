@@ -5,4 +5,4 @@
  * [Cédric Marty](https://github.com/cececoul)
 
 ## Images / Animations:
- * Esteban Esnault
+ * Esteban ESNAULT
