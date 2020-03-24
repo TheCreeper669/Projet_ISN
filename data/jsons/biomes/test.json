@@ -5,9 +5,7 @@
 		"-": "grass"
 	},
 	"sprites": {
-		"f": [ "terrain", "FakeWall" ]
-	},
-	"entities": {
+		"f": [ "terrain", "FakeWall" ],
 		"p": [ "player", "Player" ],
 		"W": [ "terrain", "Wall" ],
 		"s": [ "mob", "Spider" ]

@@ -11,6 +11,14 @@
  * [Cédric Marty](https://github.com/cececoul)
 
 ## Jouer
+ * __Se déplacer:__ Z / Q / S / D
+ * __Tirer:__ Haut / Gauche / Bas / Droite
+ * __Pause:__ échap
+ * __Monter / Cacher les masques de collisions:__ H
+ * __Monter / Cacher les sous-cartes:__ J
+ * __Entrer / Sortir du mode de vue raccourcis:__ H
+
+## Installer
  * Installer [Python 3(.7)](https://www.python.org/downloads/)
  * Installer [Pygame](https://www.pygame.org/wiki/GettingStarted)
  * Executer `__main__.py` avec python

@@ -1,7 +1,5 @@
 from game import *
 
-pg.init()
+pygame.init()
 Game()
-pg.quit()
-
-
+pygame.quit()
