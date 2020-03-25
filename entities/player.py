@@ -6,10 +6,8 @@ from entities.spell import IceSpell
 
 class Player(entities.Entity):
 	def __init__(self, game, submap, pos):
-		entities.Entity.__init__(self, game, submap, pos)
+		entities.Entity.__init__(self, game, submap, pos, game.groups["team_players"])
 		self.game.groups["players"].add(self)
-		self.game.player = self
-		#self.image = entities.Image(pgp.pg.transform.scale(pgp.pg.image.load(DIR_IMAGE_ENTITIES + "player.png"), (self.game.tile_size * 2, self.game.tile_size * 2)))
 		self.image = entities.Anim(self.game, DIR_IMAGE_ENTITIES + "player/", (self.game.tile_size * 2, self.game.tile_size * 2))
 		self.hitbox = entities.Hitbox(self, (1 / 2, 5 / 7), (2 / 7, 2 / 7), color= RED)
 		self.motion_orientation = vec(0)
@@ -29,7 +27,7 @@ class Player(entities.Entity):
 		self.weapon_orientation = entities.get_orientation(self.game.keys, self.game.keyboard, *K_WEAPON)
 		if self.weapon_cooldown > 0:
 			self.weapon_cooldown -= 1
-		elif self.weapon_cooldown == 0 and self.weapon_orientation != vec(0):
+		elif self.weapon_cooldown == 0 and self.weapon_orientation != vec(0) and self.submap is not None:
 			IceSpell(self)
 
 	def draw(self, surface, rpos):
@@ -38,6 +36,7 @@ class Player(entities.Entity):
 
 	def kill(self):
 		entities.Entity.kill(self)
-		self.game.gameover()
+		if len(self.game.groups["players"].sprites()) == 0:
+			self.game.gameover()
 
 
