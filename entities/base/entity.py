@@ -6,9 +6,11 @@ from entities.base.sprite import Sprite
 from entities.base.display import Display
 
 class Entity(Sprite):
-	def __init__(self, game, submap, pos):
+	def __init__(self, game, submap, pos, team):
 		Sprite.__init__(self, game, pos, submap)
 		self.game.groups["entities"].add(self)
+		self.team = team
+		self.team.add(self)
 		self.acc = vec(0)
 		self.vel = vec(0)
 		self.friction_coef = 0

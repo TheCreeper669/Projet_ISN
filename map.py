@@ -168,6 +168,24 @@ class Submap(entities.Sprite):
 
 
 
+class Center(entities.Sprite):
+	def __init__(self, game, group, speed= 1):
+		entities.Sprite.__init__(self, game, vec(0))
+		self.group = group
+		self.speed = speed
+		for sprite in self.group:
+			self.pos += sprite.pos
+		if len(self.group.sprites()) > 0:
+			self.pos /= len(self.group.sprites())
+
+	def update(self):
+		self.pos *= self.speed
+		for sprite in self.group:
+			self.pos += sprite.pos
+		self.pos /= (len(self.group.sprites()) + self.speed)
+
+
+
 class Follower(entities.Sprite):
 	def __init__(self, game, entity, size):
 		entities.Sprite.__init__(self, game, vec(0))
@@ -189,10 +207,10 @@ class Map:
 		with open(DIR_MAPS + self.name + EXT_MAP, mode= "r", encoding= "utf-8") as tilemap:
 			self.lines = tilemap.read().split("\n")
 		self.create_submaps()
-		self.entity = self.game.player
-		self.rpos = self.entity.pos - vec(self.game.res) / 2
-		self.on_screen_follower = Follower(self.game, self.entity, vec(self.game.on_screen).elementwise() + self.game.tile_size * self.game.submap_size * 2)
-		self.alive_follower = Follower(self.game, self.entity, vec(self.game.on_screen).elementwise() + self.game.tile_size * self.game.submap_size * self.game.off_screen_alive * 2)
+		self.center = Center(self.game, self.game.groups["players"], 8)
+		self.rpos = self.center.pos - vec(self.game.res) / 2
+		self.on_screen_follower = Follower(self.game, self.center, vec(self.game.on_screen).elementwise() + self.game.tile_size * self.game.submap_size * 2)
+		self.alive_follower = Follower(self.game, self.center, vec(self.game.on_screen).elementwise() + self.game.tile_size * self.game.submap_size * self.game.off_screen_alive * 2)
 		self.on_screen = pgp.pg.sprite.Group()
 		self.alive = pgp.pg.sprite.Group()
 		self.dead = self.game.groups["submaps"].copy()
@@ -267,6 +285,7 @@ class Map:
 			submap.link()
 
 	def update(self):
+		self.center.update()
 		self.on_screen_follower.update()
 		self.alive_follower.update()
 		self.update_submaps_groups()
@@ -274,7 +293,7 @@ class Map:
 		self.alive.update()
 
 	def draw(self, surface):
-		self.rpos = self.entity.pos - vec(self.game.res) / 2
+		self.rpos = self.center.pos - vec(self.game.res) / 2
 		for submap in self.on_screen:
 			submap.draw(surface, self.rpos)
 		for submap in self.on_screen:

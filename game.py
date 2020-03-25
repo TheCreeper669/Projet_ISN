@@ -26,6 +26,7 @@ class Game:
 		self.groups = [
 			"all", "sprites", "obstacles", "entities", "submaps",
 			"displays", "fix_displays", "hitboxs", "fakewalls",
+			"team_players", "team_mobs",
 			"players", "mobs", "walls", "spells"
 		]
 
@@ -54,27 +55,26 @@ class Game:
 
 		self.draw_order = [ self.groups[s] for s in self.draw_order ]
 
-		self.player = None
 		self.framerate_display = entities.FixDisplay(self, lambda game: "fps: " + str(int(game.clock.get_fps())), WHITE, (0, 0))
 		self.acc_display = entities.FixDisplay(	self,
 														lambda game: "acc: {}".format((
-															round(game.player.acc.x, 2),
-															round(game.player.acc.y, 2)
-														) if game.player is not None else None),
+															round(game.groups["players"].sprites()[0].acc.x, 2),
+															round(game.groups["players"].sprites()[0].acc.y, 2)
+														) if len(game.groups["players"].sprites()) > 0 else None),
 														WHITE,
 														(0, 32))
 		self.vel_display = entities.FixDisplay(	self,
 														lambda game: "vel: {}".format((
-															round(game.player.vel.x, 2),
-															round(game.player.vel.y, 2)
-														) if game.player is not None else None),
+															round(game.groups["players"].sprites()[0].vel.x, 2),
+															round(game.groups["players"].sprites()[0].vel.y, 2)
+														) if len(game.groups["players"].sprites()) > 0 else None),
 														WHITE,
 														(0, 32 * 2))
 		self.pos_display = entities.FixDisplay(	self,
 														lambda game: "pos: {}".format((
-															round(game.player.pos.x, 2),
-															round(game.player.pos.y, 2)
-														) if game.player is not None else None),
+															round(game.groups["players"].sprites()[0].pos.x, 2),
+															round(game.groups["players"].sprites()[0].pos.y, 2)
+														) if len(game.groups["players"].sprites()) > 0 else None),
 														WHITE,
 														(0, 32 * 3))
 

@@ -4,7 +4,7 @@ import entities.base as entities
 
 class IceSpell(entities.Entity):
 	def __init__(self, owner):
-		entities.Entity.__init__(self, owner.game, owner.submap, owner.pos)
+		entities.Entity.__init__(self, owner.game, owner.submap, owner.pos, owner.team)
 		self.game.groups["spells"].add(self)
 		self.owner = owner
 		self.motion_orientation = vec(self.owner.weapon_orientation)
@@ -36,7 +36,7 @@ class IceSpell(entities.Entity):
 
 	def collide(self, other):
 		entities.Entity.collide(self, other)
-		if other is not self.owner and ((not hasattr(other, "owner")) or self.owner is not other.owner):
+		if other not in self.team:
 			self.attack(other)
 			self.kill()
 

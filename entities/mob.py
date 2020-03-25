@@ -5,7 +5,7 @@ import entities.base as entities
 
 class Spider(entities.Entity):
 	def __init__(self, game, submap, pos):
-		entities.Entity.__init__(self, game, submap, pos)
+		entities.Entity.__init__(self, game, submap, pos, game.groups["team_mobs"])
 		self.game.groups["mobs"].add(self)
 		self.image = entities.Anim(self.game, DIR_IMAGE_ENTITIES + "spider/", (self.game.tile_size * 3 / 2, self.game.tile_size * 3 / 2))
 		self.hitbox = entities.Hitbox(self, (1 / 2, 3 / 5), (3 / 5, 2 / 7), color= RED)
@@ -16,26 +16,36 @@ class Spider(entities.Entity):
 		self.attack_range = self.game.tile_size
 		self.attacking = False
 		self.moving = False
+		self.target = None
 		self.life = 3
 		self.life_display_color = RED
 
 	def update(self):
 		self.attacking = False
-		self.moving = False
-		to_player = self.game.player.pos - self.pos
-		len_to_player = to_player.length()
-		if len_to_player <= self.attack_range:
-			self.attacking = True
-		elif len_to_player <= self.follow_range:
-			self.moving = True
-			self.attacking = False
-			to_player.scale_to_length(self.force_coef)
-			self.forces += to_player
+		self.traget = None
+		to_target = vec(0)
+		len_to_target = float("+inf")
+		for player in self.game.groups["players"]:
+			to_player = player.pos - self.pos
+			len_to_player = to_player.length()
+			if len_to_player <= self.attack_range:
+				self.target = player
+				self.attacking = True
+				self.target = player
+				break
+			elif len_to_player <= self.follow_range and len_to_player < len_to_target and to_player != vec(0):
+				self.target = player
+				to_target = to_player
+				len_to_target = len_to_player
+		self.moving = self.target is not None and not self.attacking
+		if self.moving:
+			to_target.scale_to_length(self.force_coef)
+			self.forces += to_target
 		entities.Entity.update(self)
 		self.life_display.update(self.pos, self.life)
 		self.image.update(True, [self.moving, self.attacking])
 		if self.attacking and self.image.counter == 0:
-			self.attack(self.game.player)
+			self.attack(self.target)
 
 	def collide(self, other):
 		entities.Entity.collide(self, other)
