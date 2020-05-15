@@ -217,7 +217,7 @@ class Map:
 		self.reset_submaps_groups()
 
 	def load_biome(self):
-		biome_data = json.load(DIR_JSON_BIOMES + self.biome + ".json")
+		biome_data = json.load(DIR_BIOMES + self.biome + ".json")
 		self.biome_tiles = biome_data["tiles"]
 		self.biome_sprites = biome_data["sprites"]
 		self.biome_default_tile = biome_data["default_tile"]

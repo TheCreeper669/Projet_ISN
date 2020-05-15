@@ -29,16 +29,13 @@ DIR_DATA = DIR_ROOT + "data/"
 
 DIR_KEYBOARDS = DIR_DATA + "keyborad/"
 DIR_MAPS = DIR_DATA + "maps/"
+DIR_BIOMES = DIR_DATA + "biomes/"
 
 DIR_IMAGES = DIR_DATA + "images/"
 DIR_IMAGE_ICONS = DIR_IMAGES + "icons/"
 DIR_IMAGE_TILES = DIR_IMAGES + "tiles/"
 DIR_IMAGE_SPRITES = DIR_IMAGES + "sprites/"
 DIR_IMAGE_ENTITIES = DIR_IMAGES + "entities/"
-
-DIR_JSONS = DIR_DATA + "jsons/"
-DIR_JSON_MAPS = DIR_JSONS + "maps/"
-DIR_JSON_BIOMES = DIR_JSONS + "biomes/"
 
 # Files
 FILE_SETTINGS = DIR_DATA + "settings.json"

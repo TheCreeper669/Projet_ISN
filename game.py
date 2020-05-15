@@ -16,6 +16,7 @@ class Game:
 		self.clock = pgp.time.Clock()
 		self.little_font = pgp.pg.font.Font(pgp.pg.font.get_default_font(), 16)
 		self.font = pgp.pg.font.Font(pgp.pg.font.get_default_font(), 32)
+		self.game_font = pgp.pg.font.Font(pgp.pg.font.get_default_font(), self.tile_size // 2)
 		self.big_font = pgp.pg.font.Font(pgp.pg.font.get_default_font(), 128)
 		self.background_image = pgp.pg.Surface(self.res)
 		self.background_image.fill(BLACK)
@@ -55,31 +56,41 @@ class Game:
 
 		self.draw_order = [ self.groups[s] for s in self.draw_order ]
 
-		self.framerate_display = entities.FixDisplay(self, lambda game: "fps: " + str(int(game.clock.get_fps())), WHITE, (0, 0))
-		self.acc_display = entities.FixDisplay(	self,
-														lambda game: "acc: {}".format((
-															round(game.groups["players"].sprites()[0].acc.x, 2),
-															round(game.groups["players"].sprites()[0].acc.y, 2)
-														) if len(game.groups["players"].sprites()) > 0 else None),
-														WHITE,
-														(0, 32))
-		self.vel_display = entities.FixDisplay(	self,
-														lambda game: "vel: {}".format((
-															round(game.groups["players"].sprites()[0].vel.x, 2),
-															round(game.groups["players"].sprites()[0].vel.y, 2)
-														) if len(game.groups["players"].sprites()) > 0 else None),
-														WHITE,
-														(0, 32 * 2))
-		self.pos_display = entities.FixDisplay(	self,
-														lambda game: "pos: {}".format((
-															round(game.groups["players"].sprites()[0].pos.x, 2),
-															round(game.groups["players"].sprites()[0].pos.y, 2)
-														) if len(game.groups["players"].sprites()) > 0 else None),
-														WHITE,
-														(0, 32 * 3))
+		self.framerate_display = entities.FixDisplay(self, lambda game: "fps: " + str(int(game.clock.get_fps())), WHITE, (0, 0), self.font)
+		self.acc_display = entities.FixDisplay(
+			self,
+			lambda game: "acc: {}".format((
+				round(game.groups["players"].sprites()[0].acc.x, 2),
+				round(game.groups["players"].sprites()[0].acc.y, 2)
+			) if len(game.groups["players"].sprites()) > 0 else None),
+			WHITE,
+			(0, 32),
+			self.font
+		)
+		self.vel_display = entities.FixDisplay(
+			self,
+			lambda game: "vel: {}".format((
+				round(game.groups["players"].sprites()[0].vel.x, 2),
+				round(game.groups["players"].sprites()[0].vel.y, 2)
+			) if len(game.groups["players"].sprites()) > 0 else None),
+			WHITE,
+			(0, 32 * 2),
+			self.font
+		)
+		self.pos_display = entities.FixDisplay(
+			self,
+			lambda game: "pos: {}".format((
+				round(game.groups["players"].sprites()[0].pos.x, 2),
+				round(game.groups["players"].sprites()[0].pos.y, 2)
+			) if len(game.groups["players"].sprites()) > 0 else None),
+			WHITE,
+			(0, 32 * 3),
+			self.font
+		)
 
 		self.map = Map(self, self.mapname, self.biome)
 		
+		self.isgameover = False
 		self.pause = False
 
 		self.pause_mask = pgp.pg.Surface(self.res)
@@ -202,7 +213,7 @@ class Game:
 		self.keys = pgp.pg.key.get_pressed()
 		for event in pgp.pg.event.get():
 			if event.type == pgp.pg.KEYDOWN:
-				if event.key == pgp.pg.K_ESCAPE:
+				if event.key == pgp.pg.K_ESCAPE and not self.isgameover:
 					self.pause = not self.pause
 					if self.pause:
 						self.paused_surface = self.window.copy()
@@ -230,6 +241,7 @@ class Game:
 
 	def gameover(self):
 		self.pause = True
+		self.isgameover = True
 		self.gameover_display = entities.FixDisplay(self, "GAME OVER", WHITE, (self.res[0] // 2, self.res[1] // 2), font= self.big_font)
 		self.gameover_display.pos -= vec(self.gameover_display.image.size) / 2
 		self.gameover_display.update()

@@ -10,7 +10,7 @@ class Display(Sprite):
 		self.game.groups["displays"].add(self)
 		self.font = font
 		if self.font is None:
-			self.font = self.game.font
+			self.font = self.game.game_font
 		self.content = content
 		self.color = color
 		if isinstance(self.content, type(lambda: None)):
