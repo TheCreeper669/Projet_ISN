@@ -13,7 +13,7 @@ class Spider(entities.Entity):
 		self.force_coef = -self.friction_coef * self.game.tile_size * 2
 		#max_speed = abs(self.force_coef / self.friction_coef)
 		self.follow_range = self.game.tile_size * 16
-		self.attack_range = self.game.tile_size
+		self.attack_range = self.game.tile_size * 1.5
 		self.attacking = False
 		self.moving = False
 		self.target = None
@@ -38,7 +38,7 @@ class Spider(entities.Entity):
 				to_target = to_player
 				len_to_target = len_to_player
 		self.moving = self.target is not None and not self.attacking
-		if self.moving:
+		if self.moving and to_target.length() != 0:
 			to_target.scale_to_length(self.force_coef)
 			self.forces += to_target
 		entities.Entity.update(self)
@@ -57,7 +57,6 @@ class Spider(entities.Entity):
 	def draw(self, surface, rpos):
 		entities.Entity.draw(self, surface, rpos)
 		self.life_display.draw(surface, rpos)
-
 
 
 
