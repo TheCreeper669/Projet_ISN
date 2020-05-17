@@ -9,8 +9,8 @@
 	"draw_hitbox": false,
 	"generation_length": 0,
 	"tile_size": 64,
-	"submap_size": 8,
-	"off_screen_alive": 4,
+	"submap_size": 4,
+	"off_screen_alive": 1,
 	"mapname": "maze_keyraus_V2",
 	"biome": "test"
 }

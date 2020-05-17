@@ -20,6 +20,12 @@ class Wall(entities.Obstacle):
 		self.image = entities.Image(pgp.pg.transform.scale(pgp.pg.image.load(DIR_IMAGE_ENTITIES + "wall.png"), (self.game.tile_size, self.game.tile_size)))
 		self.hitbox = entities.Hitbox(self, color= BLUE)
 
+		for obstacle in self.submap.obstacles:
+			if obstacle.pos.x == self.pos.x:
+				pass
+			elif obstacle.pos.y == self.pos.y:
+				pass
+
 class BigWall(entities.Obstacle):
 	def __init__(self, game, submap, pos, size= vec(1, 1)):
 		entities.Obstacle.__init__(self, game, submap, pos)
