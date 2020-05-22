@@ -36,7 +36,7 @@ class Player(entities.Entity):
 
 	def kill(self):
 		entities.Entity.kill(self)
-		if len(self.game.groups["players"].sprites()) == 0:
+		if len(self.game.groups["players"].sprites()) == 0 and not self.game.won_level:
 			self.game.gameover()
 
 

@@ -6,6 +6,7 @@
 	},
 	"sprites": {
 		"f": [ "terrain", "FakeWall" ],
+		"P": [ "terrain", "Portal" ],
 		"p": [ "player", "Player" ],
 		"W": [ "terrain", "Wall" ],
 		"s": [ "mob", "Spider" ]

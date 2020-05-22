@@ -1,5 +1,6 @@
 import pygamepp as pgp
 from vars import *
+from .util import collide
 
 class Sprite(pgp.pg.sprite.Sprite):
 	def __init__(self, game, pos, submap= None):
@@ -19,7 +20,7 @@ class Sprite(pgp.pg.sprite.Sprite):
 		submaps = pgp.pg.sprite.spritecollide(self, self.game.groups["submaps"], dokill= False, collided= collide)
 		if len(submaps) > 0:
 			submaps[0].add_sprite(self)
-			print("sprite {} added to {}".format(self, submaps[0]))
+			print("sprite {} added to {} | pos: {}".format(type(self).__name__, submaps[0], self.pos.elementwise() / self.game.tile_size))
 
 	def kill(self):
 		if self.submap is not None:

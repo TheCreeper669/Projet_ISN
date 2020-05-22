@@ -28,7 +28,7 @@ class Game:
 			"all", "sprites", "obstacles", "entities", "submaps",
 			"displays", "fix_displays", "hitboxs", "fakewalls",
 			"team_players", "team_mobs",
-			"players", "mobs", "walls", "spells"
+			"players", "mobs", "walls", "spells", "portals"
 		]
 
 		self.groups = { s: pgp.pg.sprite.Group() for s in self.groups }
@@ -47,6 +47,7 @@ class Game:
 		self.manual_draw_order = [ self.groups[s] for s in self.manual_draw_order ]
 
 		self.draw_order = [
+			"portals",
 			"fakewalls",
 			"walls",
 			"mobs",
@@ -60,8 +61,8 @@ class Game:
 		self.acc_display = entities.FixDisplay(
 			self,
 			lambda game: "acc: {}".format((
-				round(game.groups["players"].sprites()[0].acc.x, 2),
-				round(game.groups["players"].sprites()[0].acc.y, 2)
+				round(game.groups["players"].sprites()[0].acc.x / game.tile_size, 2),
+				round(game.groups["players"].sprites()[0].acc.y / game.tile_size, 2)
 			) if len(game.groups["players"].sprites()) > 0 else None),
 			WHITE,
 			(0, 32),
@@ -70,8 +71,8 @@ class Game:
 		self.vel_display = entities.FixDisplay(
 			self,
 			lambda game: "vel: {}".format((
-				round(game.groups["players"].sprites()[0].vel.x, 2),
-				round(game.groups["players"].sprites()[0].vel.y, 2)
+				round(game.groups["players"].sprites()[0].vel.x / game.tile_size, 2),
+				round(game.groups["players"].sprites()[0].vel.y / game.tile_size, 2)
 			) if len(game.groups["players"].sprites()) > 0 else None),
 			WHITE,
 			(0, 32 * 2),
@@ -80,17 +81,18 @@ class Game:
 		self.pos_display = entities.FixDisplay(
 			self,
 			lambda game: "pos: {}".format((
-				round(game.groups["players"].sprites()[0].pos.x, 2),
-				round(game.groups["players"].sprites()[0].pos.y, 2)
+				round(game.groups["players"].sprites()[0].pos.x / game.tile_size, 2),
+				round(game.groups["players"].sprites()[0].pos.y / game.tile_size, 2)
 			) if len(game.groups["players"].sprites()) > 0 else None),
 			WHITE,
 			(0, 32 * 3),
 			self.font
 		)
 
-		self.map = Map(self, self.mapname, self.biome)
+		self.map = Map(self, self.maps[self.map_index], self.biome)
 		
 		self.isgameover = False
+		self.won_level = False
 		self.pause = False
 
 		self.pause_mask = pgp.pg.Surface(self.res)
@@ -125,7 +127,8 @@ class Game:
 		self.submap_size = settings["submap_size"]
 		self.off_screen_alive = settings["off_screen_alive"]
 		self.generation_length = settings["generation_length"]
-		self.mapname = settings["mapname"]
+		self.maps = settings["maps"]
+		self.map_index = 0
 		self.biome = settings["biome"]
 
 	def loop(self):
@@ -220,7 +223,7 @@ class Game:
 						self.paused_surface_rect = self.paused_surface.get_rect()
 
 			elif event.type == pgp.pg.VIDEORESIZE:
-				print(event)
+				#print(event)
 				self.set_res(list(event.size))
 					
 			elif event.type == pgp.pg.QUIT:
@@ -243,6 +246,23 @@ class Game:
 		self.pause = True
 		self.isgameover = True
 		self.gameover_display = entities.FixDisplay(self, "GAME OVER", WHITE, (self.res[0] // 2, self.res[1] // 2), font= self.big_font)
+		self.gameover_display.pos -= vec(self.gameover_display.image.size) / 2
+		self.gameover_display.update()
+
+	def win_level(self):
+		self.won_level = True
+		self.map.kill()
+		self.map_index += 1
+		if self.map_index >= len(self.maps):
+			self.win_game()
+			return
+		self.won_level = False
+		self.map = Map(self, self.maps[self.map_index], self.biome)
+
+	def win_game(self):
+		self.pause = True
+		self.isgameover = True
+		self.gameover_display = entities.FixDisplay(self, "YOU WON", WHITE, (self.res[0] // 2, self.res[1] // 2), font= self.big_font)
 		self.gameover_display.pos -= vec(self.gameover_display.image.size) / 2
 		self.gameover_display.update()
 

@@ -6,3 +6,7 @@
 
 ## Images / Animations:
  * Esteban ESNAULT
+
+## Maps:
+ * [Cédric Marty](https://github.com/cececoul)
+ * Amaury Tissot Mazy

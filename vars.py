@@ -41,6 +41,7 @@ DIR_IMAGE_ENTITIES = DIR_IMAGES + "entities/"
 FILE_SETTINGS = DIR_DATA + "settings.json"
 
 # Extensions
+EXT_IMG = ".png"
 EXT_MAP = ".map"
 
 # Funcs
