@@ -1,4 +1,4 @@
-# Projet ISN
+# ProjectEternalMagic
 
 ## Description
  Projet en binome pour la classe d'ISN en Terminal\
