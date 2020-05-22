@@ -7,6 +7,9 @@
 ## Images / Animations:
  * Esteban ESNAULT
 
+## Musics / Sounds:
+ * [OpenGameArt.org](https://opengameart.org/)
+
 ## Maps:
  * [Cédric Marty](https://github.com/cececoul)
  * Amaury Tissot Mazy

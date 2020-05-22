@@ -28,12 +28,20 @@ class IceSpell(entities.Entity):
 		self.minvel = 256
 		self.cooldown = self.game.framerate // 4
 		self.owner.weapon_cooldown = self.cooldown
+		self.sound_break = pgp.pg.mixer.Sound(DIR_SOUNDS + "ice_spell_break.ogg")
+		self.sound_spell = pgp.pg.mixer.Sound(DIR_SOUNDS + "ice_spell.wav")
+		self.sound_spell.set_volume(self.game.volume * 2 / 3)
+		self.sound_spell.play()
 		self.update_pos()
 
 	def update(self):
 		entities.Entity.update(self)
 		if self.vel.length() <= self.minvel:
 			self.kill()
+
+	def kill(self):
+		self.sound_break.play()
+		entities.Entity.kill(self)
 
 	def collide(self, other):
 		entities.Entity.collide(self, other)

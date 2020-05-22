@@ -28,7 +28,8 @@ class Game:
 			"all", "sprites", "obstacles", "entities", "submaps",
 			"displays", "fix_displays", "hitboxs", "fakewalls",
 			"team_players", "team_mobs",
-			"players", "mobs", "walls", "spells", "portals"
+			"players", "mobs", "walls", "spells", "portals",
+			"followers"
 		]
 
 		self.groups = { s: pgp.pg.sprite.Group() for s in self.groups }
@@ -58,6 +59,7 @@ class Game:
 		self.draw_order = [ self.groups[s] for s in self.draw_order ]
 
 		self.framerate_display = entities.FixDisplay(self, lambda game: "fps: " + str(int(game.clock.get_fps())), WHITE, (0, 0), self.font)
+		"""
 		self.acc_display = entities.FixDisplay(
 			self,
 			lambda game: "acc: {}".format((
@@ -88,6 +90,7 @@ class Game:
 			(0, 32 * 3),
 			self.font
 		)
+		"""
 
 		self.map = Map(self, self.maps[self.map_index], self.biome)
 		
@@ -101,6 +104,9 @@ class Game:
 		self.pause_mask_rect = self.pause_mask.get_rect()
 
 		self.dt = 0
+
+		self.music = None
+		self.change_music(MUSIC_THEME)
 
 		for i in range(4):
 			self.clock.tick(self.framerate)
@@ -130,6 +136,7 @@ class Game:
 		self.maps = settings["maps"]
 		self.map_index = 0
 		self.biome = settings["biome"]
+		self.volume = settings["volume"] / 100
 
 	def loop(self):
 		self.dt = self.clock.tick(self.framerate)
@@ -223,7 +230,6 @@ class Game:
 						self.paused_surface_rect = self.paused_surface.get_rect()
 
 			elif event.type == pgp.pg.VIDEORESIZE:
-				#print(event)
 				self.set_res(list(event.size))
 					
 			elif event.type == pgp.pg.QUIT:
@@ -248,8 +254,10 @@ class Game:
 		self.gameover_display = entities.FixDisplay(self, "GAME OVER", WHITE, (self.res[0] // 2, self.res[1] // 2), font= self.big_font)
 		self.gameover_display.pos -= vec(self.gameover_display.image.size) / 2
 		self.gameover_display.update()
+		self.change_music(MUSIC_GAMEOVER, 1)
 
 	def win_level(self):
+		pgp.pg.mixer.Sound(DIR_SOUNDS + "teleport.wav").play()
 		self.won_level = True
 		self.map.kill()
 		self.map_index += 1
@@ -257,13 +265,25 @@ class Game:
 			self.win_game()
 			return
 		self.won_level = False
+		if self.map_index == len(self.maps) - 1:
+			self.change_music(MUSIC_BOSS)
+		else:
+			self.change_music(MUSIC_BATTLE)
 		self.map = Map(self, self.maps[self.map_index], self.biome)
 
 	def win_game(self):
+		self.change_music(MUSIC_WON, 1)
 		self.pause = True
 		self.isgameover = True
 		self.gameover_display = entities.FixDisplay(self, "YOU WON", WHITE, (self.res[0] // 2, self.res[1] // 2), font= self.big_font)
 		self.gameover_display.pos -= vec(self.gameover_display.image.size) / 2
 		self.gameover_display.update()
+
+	def change_music(self, filename, repeat= -1):
+		self.music = filename
+		pgp.pg.mixer.music.load(self.music)
+		pgp.pg.mixer.music.set_volume(self.volume)
+		pgp.pg.mixer.music.play(repeat)
+
 
 

@@ -9,6 +9,7 @@
 		"P": [ "terrain", "Portal" ],
 		"p": [ "player", "Player" ],
 		"W": [ "terrain", "Wall" ],
-		"s": [ "mob", "Spider" ]
+		"s": [ "mob", "Spider" ],
+		"B": [ "mob", "Boss" ]
 	}
 }

@@ -30,6 +30,8 @@ DIR_DATA = DIR_ROOT + "data/"
 DIR_KEYBOARDS = DIR_DATA + "keyborad/"
 DIR_MAPS = DIR_DATA + "maps/"
 DIR_BIOMES = DIR_DATA + "biomes/"
+DIR_MUSICS = DIR_DATA + "musics/"
+DIR_SOUNDS = DIR_DATA + "sounds/"
 
 DIR_IMAGES = DIR_DATA + "images/"
 DIR_IMAGE_ICONS = DIR_IMAGES + "icons/"
@@ -39,6 +41,13 @@ DIR_IMAGE_ENTITIES = DIR_IMAGES + "entities/"
 
 # Files
 FILE_SETTINGS = DIR_DATA + "settings.json"
+
+# Musics
+MUSIC_THEME = DIR_MUSICS + "theme.mp3"
+MUSIC_BATTLE = DIR_MUSICS + "battle.mp3"
+MUSIC_BOSS = DIR_MUSICS + "boss.wav"
+MUSIC_GAMEOVER = DIR_MUSICS + "gameover.wav"
+MUSIC_WON = DIR_MUSICS + "won.wav"
 
 # Extensions
 EXT_IMG = ".png"
