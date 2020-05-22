@@ -19,6 +19,7 @@ class Entity(Sprite):
 		self.life = 1
 		self.life_display_color = WHITE
 		self.life_display = Display(self.game, self.life, self.life_display_color, self.pos)
+		self.damage = 1
 		# bools
 		self.movable = True
 
@@ -93,6 +94,6 @@ class Entity(Sprite):
 		if other.movable:
 			other.forces += self.vel * self.mass
 			self.forces -= self.vel * self.mass
-			other.life -= 1
+			other.life -= self.damage
 
 

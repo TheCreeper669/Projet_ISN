@@ -75,6 +75,8 @@ class Portal(entities.Sprite):
 		entities.Sprite.__init__(self, game, pos, submap)
 		self.game.groups["portals"].add(self)
 		self.image = entities.Image(pgp.pg.transform.scale(pgp.pg.image.load(DIR_IMAGE_SPRITES + "portal" + EXT_IMG), (self.game.tile_size, self.game.tile_size)))
+		self.sound_win_level = pgp.pg.mixer.Sound(DIR_SOUNDS + "win_level.wav")
+		self.won_level = False
 
 	def colliding_with_player(self):
 		for player in self.game.groups["players"]:
@@ -84,8 +86,14 @@ class Portal(entities.Sprite):
 
 	def update(self):
 		entities.Sprite.update(self)
-		if len(self.game.groups["mobs"]) == 0 and self.colliding_with_player():
-			self.game.win_level()
+		if len(self.game.groups["mobs"]) == 0:
+			if not self.won_level:
+				self.won_level = True
+				if self.game.music != MUSIC_THEME:
+					self.game.change_music(MUSIC_THEME)
+				self.sound_win_level.play()
+			if self.colliding_with_player():
+				self.game.win_level()
 
 	def draw(self, surface, rpos= vec(0)):
 		if len(self.game.groups["mobs"]) == 0:

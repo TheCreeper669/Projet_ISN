@@ -18,6 +18,7 @@ class Player(entities.Entity):
 		#max_speed = abs(self.force_coef / self.friction_coef)
 		self.life = 5
 		self.life_display_color = GREEN
+		self.sound_death = pgp.pg.mixer.Sound(DIR_SOUNDS + "death_player.wav")
 
 	def update(self):
 		self.motion_orientation = entities.get_orientation(self.game.keys, self.game.keyboard, *K_MOTION)
@@ -35,6 +36,8 @@ class Player(entities.Entity):
 		self.life_display.draw(surface, rpos)
 
 	def kill(self):
+		if not self.game.won_level:
+			self.sound_death.play()
 		entities.Entity.kill(self)
 		if len(self.game.groups["players"].sprites()) == 0 and not self.game.won_level:
 			self.game.gameover()
