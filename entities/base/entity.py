@@ -46,6 +46,7 @@ class Entity(Sprite):
 		submaps = pgp.pg.sprite.spritecollide(self, self.game.groups["submaps"], dokill= False, collided= collide)
 		if len(submaps) > 0:
 			submaps[0].add_sprite(self)
+			#print("entity {} added to {}".format(self, submaps[0]))
 
 	def collide(self, other):
 		if other.movable:
@@ -67,8 +68,8 @@ class Entity(Sprite):
 				diff.y = posdiff.y + (other.hitbox.image.size[1] + self.hitbox.image.size[1]) / 2
 			#print("diff {}".format(diff))
 			valid = vec(
-				abs(posdiff.x) > abs(posdiff.y),
-				abs(posdiff.y) > abs(posdiff.x)
+				abs(diff.x) <= abs(diff.y),
+				abs(diff.y) < abs(diff.x)
 			)
 			#print("valid {}".format(valid))
 			if valid.x and not valid.y:
@@ -91,6 +92,7 @@ class Entity(Sprite):
 	def attack(self, other):
 		if other.movable:
 			other.forces += self.vel * self.mass
+			self.forces -= self.vel * self.mass
 			other.life -= 1
 
 

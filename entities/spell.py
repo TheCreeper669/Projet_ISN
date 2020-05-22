@@ -7,12 +7,12 @@ class IceSpell(entities.Entity):
 		entities.Entity.__init__(self, owner.game, owner.submap, owner.pos, owner.team)
 		self.game.groups["spells"].add(self)
 		self.owner = owner
-		self.motion_orientation = vec(self.owner.weapon_orientation)
 		self.submap.add_sprite(self)
+		self.motion_orientation = vec(self.owner.weapon_orientation)
 		self.image = entities.Image(
 			pgp.pg.transform.rotate(
 				pgp.pg.transform.scale(
-					pgp.pg.image.load(DIR_IMAGE_ENTITIES + "ice_spell.png"),
+					pgp.pg.image.load(DIR_IMAGE_ENTITIES + "ice_spell" + EXT_IMG),
 					(self.game.tile_size, self.game.tile_size)
 				),
 				-self.motion_orientation.as_polar()[1]
@@ -28,6 +28,7 @@ class IceSpell(entities.Entity):
 		self.minvel = 256
 		self.cooldown = self.game.framerate // 4
 		self.owner.weapon_cooldown = self.cooldown
+		self.update_pos()
 
 	def update(self):
 		entities.Entity.update(self)

@@ -23,6 +23,7 @@ class VirtualTile:
 		self.name = name
 		self.image = entities.Image(pgp.pg.image.load(DIR_IMAGE_TILES + [ file for file in listdir(DIR_IMAGE_TILES) if file.startswith(self.name + ".") ][0]))
 		self.image.set_size((self.map.game.tile_size, self.map.game.tile_size))
+
 	def summon(self, submap, x, y):
 		return Tile(self.game, submap, self.image.copy(), x, y)
 
@@ -36,6 +37,7 @@ class VirtualSprite:
 		self.constructor = entities
 		for name in self.name:
 			self.constructor = self.constructor.__dict__[name]
+
 	def summon(self, submap, x, y):
 		return self.constructor(game= self.game, pos= vec(x, y), submap= submap)
 
@@ -72,6 +74,9 @@ class Submap(entities.Sprite):
 		self.image.topleft = self.pos
 		self.hitbox = entities.Hitbox(self, color= CYAN)
 		self.display = entities.Display(self.game, self.submap_pos, CYAN, self.pos + vec(4), font= self.game.little_font)
+
+	def __repr__(self):
+		return "<Submap ({}, {})>".format(*self.submap_pos)
 
 	def create_image(self):
 		surface = pgp.pg.Surface((self.game.submap_size * self.game.tile_size, self.game.submap_size * self.game.tile_size))
@@ -165,6 +170,11 @@ class Submap(entities.Sprite):
 					highest = obj
 			group_content.remove(highest)
 			highest.draw(surface, rpos)
+
+	def kill(self):
+		for sprite in self.sprites.sprites():
+			sprite.kill()
+		entities.Sprite.kill(self)
 
 
 
@@ -308,5 +318,9 @@ class Map:
 			for submap in self.on_screen:
 				submap.hitbox.draw(surface, self.rpos)
 				submap.display.draw(surface, self.rpos)
+
+	def kill(self):
+		for submap in self.game.groups["submaps"].sprites():
+			submap.kill()
 
 

@@ -26,11 +26,11 @@ class Image(pgp.pg.Rect):
 		self.scale(*size)
 
 	def stack(self, size):
-		surface = pgp.pg.Surface(vec_mul(vec(self.size), vec(size)))
-		rect = rect(self)
-		for i in range(size[0]):
-			for j in range(size[1]):
-				rect.topleft = i * self.size, j * self.size
+		surface = pgp.pg.Surface(vec_mul(vec(self.size), vec(size)), flags= pgp.pg.SRCALPHA)
+		rect = pgp.pg.Rect(self)
+		for i in range(int(size[0])):
+			for j in range(int(size[1])):
+				rect.topleft = i * self.size[0], j * self.size[1]
 				surface.blit(self.surface, rect)
 		self.reset_surface(surface)
 

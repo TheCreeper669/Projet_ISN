@@ -11,6 +11,10 @@
 	"tile_size": 64,
 	"submap_size": 4,
 	"off_screen_alive": 1,
-	"mapname": "maze_keyraus_V2",
-	"biome": "test"
+	"biome": "test",
+	"maps": [
+		"test2",
+		"maze_keyraus_V2",
+		"mazemap2VFinal"
+	]
 }
