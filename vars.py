@@ -27,7 +27,7 @@ K_WEAPON = (K_WEAPON_UP, K_WEAPON_DOWN, K_WEAPON_LEFT, K_WEAPON_RIGHT)
 DIR_ROOT = os.path.abspath(".") + "/"
 DIR_DATA = DIR_ROOT + "data/"
 
-DIR_KEYBOARDS = DIR_DATA + "keyborad/"
+DIR_KEYBOARDS = DIR_DATA + "keyboards/"
 DIR_MAPS = DIR_DATA + "maps/"
 DIR_BIOMES = DIR_DATA + "biomes/"
 DIR_MUSICS = DIR_DATA + "musics/"

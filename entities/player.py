@@ -16,14 +16,19 @@ class Player(entities.Entity):
 		self.friction_coef = -self.game.tile_size / 8
 		self.force_coef = -self.friction_coef * self.game.tile_size * 4
 		#max_speed = abs(self.force_coef / self.friction_coef)
-		self.life = 5
+		self.life = 3
+		self.last_life = self.life
 		self.life_display_color = GREEN
+		self.sound_hurt = pgp.pg.mixer.Sound(DIR_SOUNDS + "player_hurt.wav")
 		self.sound_death = pgp.pg.mixer.Sound(DIR_SOUNDS + "death_player.wav")
 
 	def update(self):
 		self.motion_orientation = entities.get_orientation(self.game.keys, self.game.keyboard, *K_MOTION)
 		self.forces += self.motion_orientation * self.force_coef
 		entities.Entity.update(self)
+		if self.last_life > self.life and self.submap is not None:
+			self.sound_hurt.play()
+		self.last_life = self.life
 		self.image.update(self.motion_orientation != vec(0), self.motion_orientation)
 		self.weapon_orientation = entities.get_orientation(self.game.keys, self.game.keyboard, *K_WEAPON)
 		if self.weapon_cooldown > 0:

@@ -11,7 +11,7 @@ def change(keyboard, o, n):
 
 def load(filename):
 	keyboard = Keyboard()
-	for e in json.load(filename):
+	for e in json.load(filename).items():
 		change(keyboard, *e)
 	return keyboard
 
