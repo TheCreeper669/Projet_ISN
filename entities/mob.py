@@ -45,7 +45,7 @@ class Spider(Follower):
 		self.image = entities.Anim(self.game, DIR_IMAGE_ENTITIES + "spider/", (self.game.tile_size * 3 / 2, self.game.tile_size * 3 / 2))
 		self.hitbox = entities.Hitbox(self, (1 / 2, 3 / 5), (3 / 5, 2 / 7), color= RED)
 		self.friction_coef = -self.game.tile_size / 8
-		self.force_coef = -self.friction_coef * self.game.tile_size * 2
+		self.force_coef = -self.friction_coef * self.game.tile_size * 3
 		#max_speed = abs(self.force_coef / self.friction_coef)
 		self.follow_range = self.game.tile_size * 16
 		self.attack_range = self.game.tile_size * 1.5
@@ -59,8 +59,9 @@ class Spider(Follower):
 		Follower.update(self)
 		self.life_display.update(self.pos, self.life)
 		self.image.update(True, [self.moving, self.attacking])
-		if self.attacking and self.image.counter == 0:
-			self.attack(self.target)
+		if self.image.counter % self.image.step == 0:
+			if self.attacking and self.image.counter // self.image.step == 2:
+				self.attack(self.target)
 
 	def attack(self, other):
 		print("{} attacks {}".format(type(self).__name__, type(other).__name__))
@@ -83,12 +84,13 @@ class Boss(Follower):
 		self.image = entities.Anim(self.game, DIR_IMAGE_ENTITIES + "boss/", (self.game.tile_size * 8, self.game.tile_size * 8))
 		self.hitbox = entities.Hitbox(self, (1 / 2, 2 / 3), (1 / 7, 1 / 5), color= RED)
 		self.friction_coef = -self.game.tile_size / 4
-		self.force_coef = -self.friction_coef * self.game.tile_size
+		self.force_coef = -self.friction_coef * self.game.tile_size * 1.5
 		#max_speed = abs(self.force_coef / self.friction_coef)
 		self.follow_range = self.game.tile_size * 32
-		self.attack_range = self.game.tile_size * 2
+		self.attack_range = self.game.tile_size * 3
 		self.damage = 2
 		self.life = 32
+		self.last_life = self.life
 		self.life_display_color = RED
 		self.sound_hit_hard = pgp.pg.mixer.Sound(DIR_SOUNDS + "boss_hard_hit.flac")
 		self.sound_hit_hard.set_volume(self.game.volume * 2 / 3)
@@ -99,6 +101,13 @@ class Boss(Follower):
 
 	def update(self):
 		Follower.update(self)
+		if self.last_life > self.life and self.submap is not None:
+			if self.life % 2 == 0:
+				vec_to_spider = vec(0)
+				for i in range(8 - self.life // 2):
+					vec_to_spider.from_polar((3 * self.game.tile_size, 360 * i / (8 - self.life // 2)))
+					self.submap.add_sprite(Spider(self.game, self.submap, self.pos + vec_to_spider))
+		self.last_life = self.life
 		self.life_display.update(self.pos, self.life)
 		self.image.update(True, [self.moving, self.attacking])
 		if self.image.counter % self.image.step == 0:
@@ -107,6 +116,7 @@ class Boss(Follower):
 					self.attack(self.target)
 				else:
 					self.sound_hit_soft.play()
+						
 
 	def attack(self, other):
 		self.sound_hit_hard.play()
@@ -119,10 +129,10 @@ class Boss(Follower):
 
 	def kill(self):
 		self.sound_death.play()
-		for y in range(3):
-			for x in range(y + 1):
-				new_sipder = Spider(self.game, self.submap, self.pos + vec(x, y) * self.game.tile_size)
-				self.submap.add_sprite(new_sipder)
+		vec_to_spider = vec(0)
+		for i in range(16):
+			vec_to_spider.from_polar((3 * self.game.tile_size, 360 * i / 16))
+			self.submap.add_sprite(Spider(self.game, self.submap, self.pos + vec_to_spider))
 		Follower.kill(self)
 
 

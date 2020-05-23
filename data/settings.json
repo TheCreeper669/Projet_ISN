@@ -11,7 +11,7 @@
 	"generation_length": 0,
 	"tile_size": 64,
 	"submap_size": 8,
-	"off_screen_alive": 2,
+	"off_screen_alive": 1,
 	"biome": "test",
 	"maps": [
 		"test2",

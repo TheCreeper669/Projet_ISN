@@ -76,6 +76,7 @@ class Portal(entities.Sprite):
 		self.game.groups["portals"].add(self)
 		self.image = entities.Image(pgp.pg.transform.scale(pgp.pg.image.load(DIR_IMAGE_SPRITES + "portal" + EXT_IMG), (self.game.tile_size, self.game.tile_size)))
 		self.sound_win_level = pgp.pg.mixer.Sound(DIR_SOUNDS + "win_level.wav")
+		self.sound_win_level.set_volume(self.game.volume * 1 / 3)
 		self.won_level = False
 
 	def colliding_with_player(self):
