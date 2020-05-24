@@ -3,8 +3,11 @@ from vars import *
 
 import entities.base as entities
 
+# regroupes les objets statiques comme les mur et les portails
 
-
+# un faux mur
+# n'a que l'apparence d'un mur
+# ne fait pas de collisions (réduit le temps d'éxecution)
 class FakeWall(entities.Sprite):
 	def __init__(self, game, pos, submap):
 		entities.Sprite.__init__(self, game, pos, submap)
@@ -13,6 +16,8 @@ class FakeWall(entities.Sprite):
 
 
 
+# empèche le joueur de passer
+# si il y a un Wall adjacent dans sa sous carte les deux Wall fusionnent en BigWall
 class Wall(entities.Obstacle):
 	def __init__(self, game, submap, pos):
 		entities.Obstacle.__init__(self, game, submap, pos)
@@ -21,6 +26,7 @@ class Wall(entities.Obstacle):
 		self.hitbox = entities.Hitbox(self, color= BLUE)
 		self.update()
 
+		# tentative de fusion
 		for other in self.submap.obstacles:
 			if other.pos.x == self.pos.x:
 				if type(other) is Wall and self.pos.y == other.pos.y + self.game.tile_size:
@@ -57,6 +63,11 @@ class Wall(entities.Obstacle):
 					self.kill()
 					return
 
+
+
+
+# fusion de plusieurs mur adjacents
+# permet de réduire le temps d'éxecution mais augment le temps de chargement de la carte
 class BigWall(entities.Obstacle):
 	def __init__(self, game, submap, pos, size= vec(1, 1)):
 		entities.Obstacle.__init__(self, game, submap, pos)
@@ -70,6 +81,9 @@ class BigWall(entities.Obstacle):
 
 
 
+# portails de sortie de niveaux
+# n'est visible que si le joueur à tué tous les mob
+# si le joueur le touche il passe au prochain niveau
 class Portal(entities.Sprite):
 	def __init__(self, game, pos, submap= None):
 		entities.Sprite.__init__(self, game, pos, submap)
@@ -79,12 +93,17 @@ class Portal(entities.Sprite):
 		self.sound_win_level.set_volume(self.game.volume * 1 / 3)
 		self.won_level = False
 
+	# test si il touche un joueur
 	def colliding_with_player(self):
 		for player in self.game.groups["players"]:
 			if entities.util.collide(self, player):
 				return True
 		return False
 
+	# test si il est visible et touche un joueur
+	# alors il lance le prochain niveau
+	# si il est visible et mais ne touche pas un joueur
+	# alors il met la musique calme et joue un son de victoire pour signaler au joueur qu'il a finis
 	def update(self):
 		entities.Sprite.update(self)
 		if len(self.game.groups["mobs"]) == 0:
@@ -96,6 +115,7 @@ class Portal(entities.Sprite):
 			if self.colliding_with_player():
 				self.game.win_level()
 
+	# draw uniquement si il n'y a plus de mob
 	def draw(self, surface, rpos= vec(0)):
 		if len(self.game.groups["mobs"]) == 0:
 			self.image.draw(surface, rpos)

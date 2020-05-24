@@ -1,5 +1,7 @@
 from math import sqrt
 
+# /!\ N'EST PAS UTILISÉ /!\
+
 class Vector:
 	def __init__(self, size):
 		if not isinstance(size, int) or size < 0:

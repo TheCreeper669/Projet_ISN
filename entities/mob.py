@@ -3,17 +3,25 @@ from vars import *
 
 import entities.base as entities
 
+# regroupe les entitées hostiles
 
+
+# class virtuelle
+# créer un mob qui suit le joueur (ou un autre groupe de sprites)
+# va tout droit même si il fonce dans un mur
+# la class fille doit implémenter une range de poursuite et une range d'attaque
 class Follower(entities.Entity):
 	def __init__(self, game, submap, pos):
 		entities.Entity.__init__(self, game, submap, pos, game.groups["team_mobs"])
 		self.game.groups["mobs"].add(self)
 		self.game.groups["followers"].add(self)
-		self.moving = False
-		self.attacking = False
-		self.target = None
-		self.follow_group = self.game.groups["players"]
+		self.moving = False # les follower est dans la range de poursuite
+		self.attacking = False # les follower est dans la range d'attaque
+		self.target = None # le sprite que suit actuelement le follower
+		self.follow_group = self.game.groups["players"] # le groupe de sprites à suivre (par défaut les joueurs)
 
+	# suit les sprites du groupe self.follow_group
+	# suit le sprite le splus proche de ce groupe si il est dans la range de poursuite
 	def update(self):
 		self.attacking = False
 		self.traget = None
@@ -38,6 +46,9 @@ class Follower(entities.Entity):
 		entities.Entity.update(self)
 
 
+
+# mob de base
+# petite arraigné à trois pattes qui suit le joueur et lui inflige des dégats au corp à corp
 class Spider(Follower):
 	def __init__(self, game, submap, pos):
 		Follower.__init__(self, game, submap, pos)
@@ -55,6 +66,7 @@ class Spider(Follower):
 		self.sound_death.set_volume(self.game.volume * 1 / 3)
 		self.update_pos()
 
+	# update image et attaque si sur la frame d'attaque
 	def update(self):
 		Follower.update(self)
 		self.life_display.update(self.pos, self.life)
@@ -63,14 +75,12 @@ class Spider(Follower):
 			if self.attacking and self.image.counter // self.image.step == 2:
 				self.attack(self.target)
 
-	def attack(self, other):
-		print("{} attacks {}".format(type(self).__name__, type(other).__name__))
-		entities.Entity.attack(self, other)
-
+	# draw en tant qu'Entity puis draw life display
 	def draw(self, surface, rpos):
 		entities.Entity.draw(self, surface, rpos)
 		self.life_display.draw(surface, rpos)
 
+	# détruit l'entitée, joue un son
 	def kill(self):
 		self.sound_death.play()
 		Follower.kill(self)
@@ -99,6 +109,9 @@ class Boss(Follower):
 		self.sound_death = pgp.pg.mixer.Sound(DIR_SOUNDS + "death_boss.wav")
 		self.update_pos()
 
+	# update image et attaque si sur la frame d'attaque
+	# de plus fait apparaitre des spiders si sa vie est basse
+	# pour chaque nombre paire en dessous de 16, le boss fait apparaitre une spidre de plus (de 1 à 16 quand il meurt)
 	def update(self):
 		Follower.update(self)
 		if self.last_life > self.life and self.submap is not None:
@@ -117,16 +130,17 @@ class Boss(Follower):
 				else:
 					self.sound_hit_soft.play()
 						
-
+	# attaque et joue un son
 	def attack(self, other):
 		self.sound_hit_hard.play()
-		print("{} attacks {}".format(type(self).__name__, type(other).__name__))
 		entities.Entity.attack(self, other)
 
+	# draw en tant qu'Entity puis draw life display
 	def draw(self, surface, rpos):
 		entities.Entity.draw(self, surface, rpos)
 		self.life_display.draw(surface, rpos)
 
+	# détruit l'entitée, joue un son et fait apparaitre 16 spriders en cercle
 	def kill(self):
 		self.sound_death.play()
 		vec_to_spider = vec(0)

@@ -4,6 +4,8 @@ from vars import *
 from entities.base.image import Image
 from entities.base.sprite import Sprite
 
+# /!\ N'EST PAS UTILISÉ /!\
+
 class Center(Sprite):
 	def __init__(self, sprite, color= RED):
 		Sprite.__init__(self, sprite.game)
