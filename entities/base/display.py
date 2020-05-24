@@ -4,6 +4,12 @@ from vars import *
 from entities.base.image import Image
 from entities.base.sprite import Sprite
 
+# les displays prennent une position, une couleur, une font et un contenu
+# ce contenu peut être:
+# soit une fonction qui prend l'objet Jeu en argument et dont le résultat est un objet qui soit transformable en str
+# soit un objet qui soit transformable en str
+
+# affiche un texte qui dans le jeu (position relative)
 class Display(Sprite):
 	def __init__(self, game, content, color, pos, font= None):
 		Sprite.__init__(self, game, pos)
@@ -30,6 +36,7 @@ class Display(Sprite):
 			self.image = Image(self.font.render(str(self.content), True, self.color))
 		self.image.topleft = self.pos
 
+# affiche un texte sur l'écran (position fixe)
 class FixDisplay(Display):
 	def __init__(self, game, content, color, pos, font= None):
 		Display.__init__(self, game, content, color, pos, font)

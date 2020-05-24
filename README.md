@@ -4,7 +4,7 @@
  Projet en binome pour la classe d'ISN en Terminal\
  Jeu en vue isométrique en python avec pygame\
  Inspiré du jeu The Binding Of Isaac d'Edmund McMillen\
- __Vers:__ 0.4.5
+ __Vers:__ 0.4.6
 
 ## Auteurs
  * [Maxence MICHOT](https://github.com/VokunGahrotLaas)
@@ -21,8 +21,9 @@
  * __Entrer / Sortir du mode de vue raccourcis:__ K
 
 ## Installer
- * Télécharger [Projet ISN V0.4.5](https://github.com/VokunGahrotLaas/ProjectEternalMagic/releases/download/v0.4.5/ProjectEternalMagic_V0.4.5.zip)
- * Lancer `launcher.bat`
+ * Télécharger [Projet ISN V0.4.6](https://github.com/VokunGahrotLaas/ProjectEternalMagic/releases/download/v0.4.6/ProjectEternalMagic_V0.4.6.zip)
+ * Lancer `launcher.bat` pour le launcher
+ * Lancer `play.bat` pour jouer directement
 ### Ou
  * Installer [Python 3(.7)](https://www.python.org/downloads/)
  * Installer [Pygame](https://www.pygame.org/wiki/GettingStarted)
